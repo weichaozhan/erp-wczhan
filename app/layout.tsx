@@ -2,18 +2,32 @@ import React from 'react';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ConfigProvider } from 'antd';
 
-import MainLayout from './components/mainLayout';
+import MainLayout from './components/mainLayout/index';
 
 import "./globals.css";
+import { THEME_TOKENS } from './constants/theme';
 
 const RootLayout = ({ children }: React.PropsWithChildren) => (
-  <html lang="en">
+  <html>
     <body>
       <AntdRegistry>
-        <MainLayout>
-          {children}
-        </MainLayout>
+        <ConfigProvider
+          theme={{
+            token: THEME_TOKENS.default,
+            components: {
+              Layout: {
+                headerBg: 'red',
+                footerBg: 'orange'
+              }
+            },
+          }}
+        >
+          <MainLayout>
+            {children}
+          </MainLayout>
+        </ConfigProvider>
       </AntdRegistry>
     </body>
   </html>
