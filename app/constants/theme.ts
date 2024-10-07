@@ -1,11 +1,23 @@
-import { ThemeConfig } from "antd";
+/**
+ * @author weichaozhan
+ */
 
-const LIGHT_BLUE = '#167fff82'; 
+import { ThemeConfig } from 'antd';
 
-export const THEME_TOKENS: {
-  [props: string]: ThemeConfig['token'];
+const LIGHT_BLUE = '#167fffff';
+const WHITE = '#fffff';
+
+export const THEMES: {
+  default: ThemeConfig;
 } = {
   default: {
-    colorPrimary: LIGHT_BLUE,
+    components: {
+      Layout: {
+        bodyBg: WHITE,
+        headerBg: LIGHT_BLUE,
+        footerBg: LIGHT_BLUE,
+        colorText: WHITE,
+      },
+    }
   },
 };

@@ -7,22 +7,14 @@ import { ConfigProvider } from 'antd';
 import MainLayout from './components/mainLayout/index';
 
 import "./globals.css";
-import { THEME_TOKENS } from './constants/theme';
+import { THEMES } from './constants/theme';
 
 const RootLayout = ({ children }: React.PropsWithChildren) => (
   <html>
     <body>
       <AntdRegistry>
         <ConfigProvider
-          theme={{
-            token: THEME_TOKENS.default,
-            components: {
-              Layout: {
-                headerBg: 'red',
-                footerBg: 'orange'
-              }
-            },
-          }}
+          theme={THEMES.default}
         >
           <MainLayout>
             {children}
