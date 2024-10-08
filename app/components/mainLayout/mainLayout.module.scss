@@ -1,29 +1,20 @@
 .layoutWrapper {
   height: 100%;
-}
-
-.header {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-
-  .title {
-    color: #fff;
-    font-size: 24px;
+  
+  .header {
+    margin: 0;
+    padding: 0 0;
   }
-}
-
-.footer {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  color: #fff;
-}
-
-.hiden {
-  display: none;
+  .footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #fff;
+  }
+  
+  .hiden {
+    display: none;
+  }
 }

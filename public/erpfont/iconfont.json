@@ -1,0 +1,16 @@
+{
+  "id": "4702956",
+  "name": "erp",
+  "font_family": "erpfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "40344394",
+      "name": "员工雇员肖像",
+      "font_class": "officer",
+      "unicode": "e902",
+      "unicode_decimal": 59650
+    }
+  ]
+}

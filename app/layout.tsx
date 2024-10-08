@@ -6,11 +6,14 @@ import { ConfigProvider } from 'antd';
 
 import MainLayout from './components/mainLayout/index';
 
-import "./globals.css";
+import './globals.css';
 import { THEMES } from './constants/theme';
 
 const RootLayout = ({ children }: React.PropsWithChildren) => (
   <html>
+    <head>
+      <script src="/erpfont/iconfont.js" />
+    </head>
     <body>
       <AntdRegistry>
         <ConfigProvider

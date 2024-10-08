@@ -5,7 +5,7 @@
 import { ThemeConfig } from 'antd';
 
 const LIGHT_BLUE = '#167fffff';
-const WHITE = '#fffff';
+const WHITE = '#ffffff';
 
 export const THEMES: {
   default: ThemeConfig;

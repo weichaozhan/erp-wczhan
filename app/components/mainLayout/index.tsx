@@ -3,7 +3,6 @@
  */
 
 "use client"
-import React from 'react';
 import { Layout } from 'antd';
 import classNames from 'classnames';
 import { usePathname } from 'next/navigation';
@@ -13,6 +12,7 @@ import Sider from 'antd/es/layout/Sider';
 import mainLayoutStyle from './mainLayout.module.scss';
 
 import { HOME_PATH_NAME } from '../../constants';
+import HeaderContent from '../headerContent';
 
 const { Header, Footer, Content } = Layout;
 
@@ -27,9 +27,7 @@ const MainLayout = ({
   return (
     <Layout className={classNames(mainLayoutStyle.layoutWrapper)}>
       <Header className={classNames(mainLayoutStyle.header)}>
-        <h1 className={classNames(mainLayoutStyle.title)}>
-          简易 ERP
-        </h1>
+        <HeaderContent />
       </Header>
   
       <Layout hasSider={!isHomePage}>
