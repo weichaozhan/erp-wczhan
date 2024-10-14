@@ -16,7 +16,7 @@ export const THEMES: {
         bodyBg: WHITE,
         headerBg: LIGHT_BLUE,
         footerBg: LIGHT_BLUE,
-        colorText: WHITE,
+        siderBg: LIGHT_BLUE,
       },
     }
   },
