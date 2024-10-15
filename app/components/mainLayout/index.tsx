@@ -35,22 +35,23 @@ const MainLayout = ({
   
   console.log('isNodeSider', isNodeSider, 'isDesigner', isDesigner);
 
-  return isDesigner ? children : (
+  return (
     <Layout className={classNames(mainLayoutStyle.layoutWrapper)}>
       <Header className={classNames(mainLayoutStyle.header)}>
         <HeaderContent />
       </Header>
   
       <Layout hasSider={!isNodeSider}>
-        <Sider width="200" className={classNames(isNodeSider ? mainLayoutStyle.hiden : '')}>
+        {!isDesigner && <Sider width="200" className={classNames(isNodeSider ? mainLayoutStyle.hiden : '')}>
           Sider
-        </Sider>
+        </Sider>}
+
         <Content className={mainLayoutStyle.content}>
           {children}
         </Content>
       </Layout>
   
-      <Footer className={classNames(mainLayoutStyle.footer)}>
+      <Footer className={classNames(isDesigner ? mainLayoutStyle.hiden : mainLayoutStyle.footer)}>
         JAMES ZHAN 创作
       </Footer>
     </Layout>

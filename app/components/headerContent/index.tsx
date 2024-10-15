@@ -7,11 +7,15 @@ import Tools from './toos';
 const HeaderContent = () => {
   return (
     <div className={classNames(styles.wrapper)}>
-      <Link href="/" >
+      <Link href="/" className={classNames(styles['title-wrapper'])} >
         <h1 className={classNames(styles.title)}>
           简易 ERP
         </h1>
       </Link>
+
+      <div id="potalTools">
+        potal tools
+      </div>
 
       <Tools />
     </div>
