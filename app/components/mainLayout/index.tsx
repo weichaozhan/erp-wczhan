@@ -11,27 +11,38 @@ import Sider from 'antd/es/layout/Sider';
 
 import mainLayoutStyle from './mainLayout.module.scss';
 
-import { NO_SIDER_PATHS } from '../../constants';
+import { DESIGNER_PATH_NAME, NO_SIDER_PATHS } from '../../constants';
 import HeaderContent from '../headerContent';
 
 const { Header, Footer, Content } = Layout;
 
+const usePathHanlder = () => {
+  const pathName = usePathname();
+  const isNodeSider = NO_SIDER_PATHS.includes(pathName);
+
+  const isDesigner = DESIGNER_PATH_NAME === pathName;
+
+  return {
+    isNodeSider,
+    isDesigner,
+  };
+};
+
 const MainLayout = ({
   children,
 }: React.PropsWithChildren) => {
+  const { isDesigner, isNodeSider } = usePathHanlder();
+  
+  console.log('isNodeSider', isNodeSider, 'isDesigner', isDesigner);
 
-  const pathName = usePathname();
-  const isHomePage = NO_SIDER_PATHS.includes(pathName);
-  console.log('router', isHomePage);
-
-  return (
+  return isDesigner ? children : (
     <Layout className={classNames(mainLayoutStyle.layoutWrapper)}>
       <Header className={classNames(mainLayoutStyle.header)}>
         <HeaderContent />
       </Header>
   
-      <Layout hasSider={!isHomePage}>
-        <Sider width="200" className={classNames(isHomePage ? mainLayoutStyle.hiden : '')}>
+      <Layout hasSider={!isNodeSider}>
+        <Sider width="200" className={classNames(isNodeSider ? mainLayoutStyle.hiden : '')}>
           Sider
         </Sider>
         <Content className={mainLayoutStyle.content}>
