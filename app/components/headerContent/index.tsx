@@ -13,9 +13,7 @@ const HeaderContent = () => {
         </h1>
       </Link>
 
-      <div id="potalTools">
-        potal tools
-      </div>
+      <div id="potalTools" className={classNames(styles['potal-tools-wrapper'])} />
 
       <Tools />
     </div>

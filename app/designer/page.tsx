@@ -1,10 +1,15 @@
 import * as THREE from 'three';
 
+import Tools from './components/tools';
+
 const Designer = () => {
   return (
-    <div>
-      Designer
-    </div>
+    <>
+      <Tools />
+      <div>
+        Designer
+      </div>
+    </>
   )
 };
 
