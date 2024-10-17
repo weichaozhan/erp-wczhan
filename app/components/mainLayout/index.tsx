@@ -22,7 +22,7 @@ const MainLayout = ({
         <HeaderContent />
       </Header>
   
-      <Layout>
+      <Layout hasSider>
         <SiderLayout />
 
         <Content className={mainLayoutStyle.content}>
