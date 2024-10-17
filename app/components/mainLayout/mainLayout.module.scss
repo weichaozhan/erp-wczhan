@@ -4,9 +4,11 @@
   .header {
     margin: 0;
     padding: 0 0;
+    position: relative;
+    z-index: 1;
   }
   .content {
-    padding: 10px 20px;
+    padding: 0;
   }
   .footer {
     display: flex;
