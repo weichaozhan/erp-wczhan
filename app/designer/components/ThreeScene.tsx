@@ -18,6 +18,7 @@ interface ThreeObj {
 const ThreeScene = () => {
   const wrapperDom = useRef<Element | null>();
   const animeTimer = useRef<number | null | undefined>();
+  const resizeTarget = useRef<EventListenerObject['handleEvent']>();
 
   const threeObj = useRef<ThreeObj>({});
 
@@ -42,6 +43,10 @@ const ThreeScene = () => {
 
   const initThree = useCallback(_.once(() => {
     if (wrapperDom.current) {
+      if (resizeTarget.current) {
+        window.removeEventListener('resize', resizeTarget.current);
+      }
+
       const width = wrapperDom.current.clientWidth;
       const height = wrapperDom.current.clientHeight;
 
@@ -62,6 +67,18 @@ const ThreeScene = () => {
       threeObj.current.camera.position.z = 5;
 
       animate();
+
+      resizeTarget.current = () => {
+        if (wrapperDom.current && threeObj.current.camera) {
+          const width = wrapperDom.current.clientWidth;
+          const height = wrapperDom.current.clientHeight;
+  
+          threeObj.current.renderer?.setSize(width, height);
+          threeObj.current.camera.aspect = width / height;
+          threeObj.current.camera.updateProjectionMatrix();
+        }
+      };
+      window.addEventListener('resize', resizeTarget.current);
     }
   }), []);
 
