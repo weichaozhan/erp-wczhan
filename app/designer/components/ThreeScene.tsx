@@ -9,10 +9,11 @@ import { Button } from 'antd';
 import styles from '../styles/threeScene.module.scss';
 
 interface ThreeObj {
-  cube?: Three.Mesh<Three.BoxGeometry, Three.MeshBasicMaterial, Three.Object3DEventMap>,
-  renderer?: Three.WebGLRenderer,
-  scene?: Three.Scene,
-  camera?: Three.PerspectiveCamera,
+  cube?: Three.Mesh<Three.BoxGeometry, Three.MeshBasicMaterial, Three.Object3DEventMap>;
+  line?: Three.Line<Three.BufferGeometry<Three.NormalBufferAttributes>, Three.LineBasicMaterial, Three.Object3DEventMap>;
+  renderer?: Three.WebGLRenderer;
+  scene?: Three.Scene;
+  camera?: Three.PerspectiveCamera;
 }
 
 const ThreeScene = () => {
@@ -23,23 +24,75 @@ const ThreeScene = () => {
   const threeObj = useRef<ThreeObj>({});
 
   const animate = useCallback(() => {
-        const { cube, renderer, scene, camera } = threeObj.current;
+        const { cube, line, renderer, scene, camera } = threeObj.current;
         
         if (animeTimer.current === null) {
           animeTimer.current = undefined;
           return;
         }
 
-        if (cube && renderer && scene && camera) {
-          animeTimer.current = requestAnimationFrame(() => {
-            animate();
-          });
-          renderer.render(scene, camera);
-          cube.rotation.x += 0.01
-          cube.rotation.y += 0.01
-          cube.rotation.z += 0.01
+        if (renderer && scene && camera) {
+          if (cube || line) {
+            animeTimer.current = requestAnimationFrame(() => {
+              animate();
+            });
+            renderer.render(scene, camera);
+          }
+          // 立方体旋转
+          if (cube) {
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            cube.rotation.z += 0.01;
+          }
+
+          if (line) {
+            line.rotation.x -= 0.02;
+            line.rotation.y -= 0.01;
+            line.rotation.z += 0.01;
+          }
         }
   }, []);
+
+  const handleResize = () => {
+    resizeTarget.current = () => {
+      if (wrapperDom.current && threeObj.current.camera) {
+        const width = wrapperDom.current.clientWidth;
+        const height = wrapperDom.current.clientHeight;
+
+        threeObj.current.renderer?.setSize(width, height);
+        threeObj.current.camera.aspect = width / height;
+        threeObj.current.camera.updateProjectionMatrix();
+      }
+    };
+    window.addEventListener('resize', resizeTarget.current);
+  };
+
+  // 立方体
+  const createCube = () => {
+    const geometry = new Three.BoxGeometry(1, 1, 1);
+    const material = new Three.MeshBasicMaterial({ color: 0x00ff00 });
+    threeObj.current.cube = new Three.Mesh(geometry, material);
+
+    threeObj.current.scene?.add(threeObj.current.cube);
+  }
+
+  // 画线
+  const createLine = () => {
+    const material = new Three.LineBasicMaterial({
+      color: 'red',
+    });
+
+    const points: Three.Vector3[] = [];
+    points.push(new Three.Vector3(-2, 0, 0));
+    points.push(new Three.Vector3(0, 3, 0));
+    points.push(new Three.Vector3(2, 0, 0));
+
+    const geometry = new Three.BufferGeometry().setFromPoints(points);
+
+    threeObj.current.line = new Three.Line(geometry, material);
+
+    threeObj.current.scene?.add(threeObj.current.line);
+  }
 
   const initThree = useCallback(_.once(() => {
     if (wrapperDom.current) {
@@ -52,33 +105,20 @@ const ThreeScene = () => {
 
       threeObj.current.scene = new Three.Scene();
       
-      threeObj.current.camera = new Three.PerspectiveCamera( 75, width / height, 0.1, 1000);
+      threeObj.current.camera = new Three.PerspectiveCamera( 75, width / height, 0.01, 1000);
 
       threeObj.current.renderer = new Three.WebGLRenderer();
       threeObj.current.renderer.setSize( width, height );
       wrapperDom.current.appendChild(threeObj.current.renderer.domElement);
 
-      const geometry = new Three.BoxGeometry( 1, 1, 1 );
-      const material = new Three.MeshBasicMaterial( { color: 0x00ff00 } );
-      threeObj.current.cube = new Three.Mesh( geometry, material );
-
-      threeObj.current.scene.add(threeObj.current.cube);
-
       threeObj.current.camera.position.z = 5;
+
+      createCube();
+      createLine();
 
       animate();
 
-      resizeTarget.current = () => {
-        if (wrapperDom.current && threeObj.current.camera) {
-          const width = wrapperDom.current.clientWidth;
-          const height = wrapperDom.current.clientHeight;
-  
-          threeObj.current.renderer?.setSize(width, height);
-          threeObj.current.camera.aspect = width / height;
-          threeObj.current.camera.updateProjectionMatrix();
-        }
-      };
-      window.addEventListener('resize', resizeTarget.current);
+      handleResize();
     }
   }), []);
 
