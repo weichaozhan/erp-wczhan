@@ -27,7 +27,11 @@ export const createParrot = async ({
     // get model
     threeObj.parrot = parrotData.scene.children[0];
 
-    const texture = new Three.TextureLoader().load('/robot.png');
+    const texture = await new Promise<Three.Texture>((res) => {
+      new Three.TextureLoader().load('/robot.png', (data) => {
+        res(data);
+      });
+    });
     const material = new Three.MeshBasicMaterial({
       map: texture,
     });
@@ -56,6 +60,5 @@ export const createParrot = async ({
     const enLight = new Three.HemisphereLight();
 
     scene.add(threeObj.parrot, mainLight, enLight);
-    renderer.render(scene, camera);
   }
 };

@@ -52,12 +52,6 @@ const ThreeScene = () => {
           const { x, y } = e.delta ?? {};
           
           if (clockThree.current && parrot) {
-            const texture = new Three.TextureLoader().load('/robot.png');
-            const material = new Three.MeshBasicMaterial({
-              map: texture,
-            });
-            parrot.material = material;
-
             if (x) {
               parrot.rotation.y += (x / 10);
             }
@@ -98,6 +92,8 @@ const ThreeScene = () => {
       handleResize();
 
       dragHandler();
+
+      rerenderCanvas();
     }
   }), []);
 
