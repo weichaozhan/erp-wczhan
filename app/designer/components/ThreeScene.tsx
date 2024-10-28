@@ -4,20 +4,27 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import * as Three from 'three';
 import interact from 'interactjs';
-import { useCallback, useEffect, useRef } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import Spin from 'antd/lib/spin';
 
 import styles from '../styles/threeScene.module.scss';
 
 import { ThreeObj, createParrot } from '../handlers/modelCreators';
+import { Target } from '@interactjs/types';
 
-const ThreeScene = () => {
-  const wrapperDom = useRef<Element | null>();
+interface Props {
+}
+const ThreeScene: FC<Props> = () => {
+  const wrapperDom = useRef<HTMLDivElement | null>(null);
   const resizeTarget = useRef<EventListenerObject['handleEvent']>();
 
   // Three 帧时时钟
   const clockThree = useRef<Three.Clock | undefined>();
 
   const threeObj = useRef<ThreeObj>({});
+
+  // loading
+  const [loading, setLoading] = useState(false);
 
   const rerenderCanvas = () => {
     const { renderer, camera, scene } = threeObj.current;
@@ -45,7 +52,7 @@ const ThreeScene = () => {
   };
 
   const dragHandler = () => {
-    interact('#three-scene').draggable({
+    interact(wrapperDom.current as Target).draggable({
       listeners: {
         move: (e) => {
           const { parrot } = threeObj.current;
@@ -53,10 +60,10 @@ const ThreeScene = () => {
           
           if (clockThree.current && parrot) {
             if (x) {
-              parrot.rotation.y += (x / 10);
+              parrot.rotation.y += (x / 100);
             }
             if (y) {
-              parrot.rotation.x += (y / 10);
+              parrot.rotation.x += (y / 100);
             }
             rerenderCanvas();
           }
@@ -71,11 +78,14 @@ const ThreeScene = () => {
         window.removeEventListener('resize', resizeTarget.current);
       }
 
+      setLoading(true);
+
       const width = wrapperDom.current.clientWidth;
       const height = wrapperDom.current.clientHeight;
 
       threeObj.current.scene = new Three.Scene();
-      threeObj.current.scene.background = new Three.Color('rgb(255, 255, 255)');
+      threeObj.current.scene.background
+      threeObj.current.scene.background = new Three.Color(0xf5f5f5);
       
       threeObj.current.camera = new Three.PerspectiveCamera( 75, width / height, 0.01, 1000);
 
@@ -94,18 +104,28 @@ const ThreeScene = () => {
       dragHandler();
 
       rerenderCanvas();
+
+      setLoading(false);
     }
   }), []);
 
   useEffect(() => {
-    wrapperDom.current = document.querySelector('#three-scene');
     initThree();
   }, []);
 
 
   return (
     <div className={classNames(styles['three-content-wrapper'])} >
-      <div id="three-scene" className={classNames(styles['three-scene'])} >
+      <div
+        ref={r => {
+          wrapperDom.current = r;
+        }} 
+        className={classNames(styles['three-scene'])}
+      >
+      </div>
+
+      <div className={classNames(styles.loading, loading ? undefined : styles.hidden)}>
+        <Spin size="large" />
       </div>
     </div>
   );

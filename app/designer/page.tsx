@@ -4,9 +4,9 @@ import Sider from 'antd/es/layout/Sider';
 import { Content } from 'antd/es/layout/layout';
 import classNames from 'classnames';
 
-import ThreeScene from './components/ThreeScene';
-
 import styles from './styles/index.module.scss';
+
+import PreviewSider from './components/previewSider';
 
 const Designer = () => {
 
@@ -14,10 +14,13 @@ const Designer = () => {
     <>
       <Tools />
       <Layout className={classNames(styles['main-layout'])} hasSider>
-        <Sider width={200} />
+        <Sider width={200} className={classNames(styles.sider)} />
 
         <Content className={classNames(styles.content)}>
-          <ThreeScene />
+          <div style={{ height: '100%', flexGrow: 1, }}>
+            content
+          </div>
+          <PreviewSider />
         </Content>
       </Layout>
     </>

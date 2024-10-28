@@ -11,12 +11,12 @@ export interface ThreeObj {
 }
 
 // bird
-export interface CreateParrotParmas {
+export interface CreateObjParams {
   threeObj: ThreeObj;
 }
 export const createParrot = async ({
   threeObj,
-}: CreateParrotParmas) => {
+}: CreateObjParams) => {
   const { scene, camera, renderer } = threeObj;
   const loader = new GLTFLoader();
 

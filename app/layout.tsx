@@ -3,6 +3,7 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
 
 import MainLayout from './components/mainLayout/index';
 
@@ -10,7 +11,7 @@ import './globals.css';
 import { THEMES } from './constants/theme';
 
 const RootLayout = ({ children }: React.PropsWithChildren) => (
-  <html>
+  <html lang="zh-CN">
     <head>
       <script src="/erpfont/iconfont.js" />
     </head>
@@ -18,6 +19,7 @@ const RootLayout = ({ children }: React.PropsWithChildren) => (
       <AntdRegistry>
         <ConfigProvider
           theme={THEMES.default}
+          locale={zhCN}
         >
           <MainLayout>
             {children}

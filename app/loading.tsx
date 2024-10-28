@@ -1,12 +1,23 @@
-import Image from 'next/image';
+import Spin from 'antd/lib/spin';
 
 export default function Loading() {
   return (
-    <Image
-      src='/icon_loading.svg'
-      alt='loading_logo'
-      width={100}
-      height={100}
-    />
+    <div
+      style={{
+        height: '100%',
+        width: '100%',
+        position: 'relative',
+      }}
+    >
+      <Spin
+        size="large"
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'traslate(-50%)',
+        }}
+      />
+    </div>
   );
 };
