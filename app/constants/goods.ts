@@ -1,3 +1,4 @@
 export enum GOODS {
   FRAMED_PAINT_3040 = 0,
+  FRAMED_PAINT_4030 = 1,
 };
