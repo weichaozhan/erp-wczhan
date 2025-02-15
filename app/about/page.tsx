@@ -8,7 +8,7 @@ function About() {
         desc
       </p>
     </div>
-  )
+  );
 }
 
-export default About
+export default About;

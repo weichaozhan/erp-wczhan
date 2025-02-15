@@ -5,7 +5,7 @@
 import { Layout } from 'antd';
 import classNames from 'classnames';
 
-import { Header, Content } from 'antd/es/layout/layout';
+import { Content } from 'antd/es/layout/layout';
 
 import mainLayoutStyle from './mainLayout.module.scss';
 
@@ -18,9 +18,7 @@ const MainLayout = ({
 }: React.PropsWithChildren) => {
   return (
     <Layout className={classNames(mainLayoutStyle.layoutWrapper)}>
-      <Header className={classNames(mainLayoutStyle.header)}>
-        <HeaderContent />
-      </Header>
+      <HeaderContent />
   
       <Layout hasSider>
         <SiderLayout />
