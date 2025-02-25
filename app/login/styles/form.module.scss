@@ -1,0 +1,17 @@
+.form {
+  width: 500px;
+  padding: 30px 20px 0px 20px!important;
+  background-color: white;
+  box-shadow: 6px 6px 10px -6px rgba(0,0,0,0.5);
+  border-radius: 8px;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.desc-pwd {
+  margin-left: 4px;
+}
