@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import styles from './toolsSider.module.scss';
 import { useStore } from '@/app/store';
-import { GOODS } from '@/app/constants/goods';
+import { GOODS } from '@/app/global/constants/goods';
 
 const ToolsSider = () => {
   const setGoods = useStore((state) => state.setGoods);

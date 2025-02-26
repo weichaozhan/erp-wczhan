@@ -1,6 +1,6 @@
 import { usePathname } from 'next/navigation';
 
-import { DESIGNER_PATH_NAME, NO_SIDER_PATHS } from '../constants';
+import { DESIGNER_PATH_NAME, NO_SIDER_PATHS } from '../global/constants';
 
 export const usePathHanlder = () => {
   const pathName = usePathname();

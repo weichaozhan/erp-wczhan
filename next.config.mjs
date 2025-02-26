@@ -6,10 +6,13 @@ const __dirname = path.dirname(__filename); // get the name of the directory
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   webpack: {
     
   },
-  includePaths: [path.join(__dirname, 'styles')],
+  sassOptions: {
+    includePaths: [path.join(__dirname, 'styles')],
+  },
 };
 
 export default nextConfig;

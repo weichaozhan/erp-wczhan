@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-import { GOODS } from '../constants/goods';
+import { GOODS } from '../global/constants/goods';
 
 interface State {
   // 登陆态

@@ -5,7 +5,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Form, Input, Button, Tooltip, } from 'antd';
 
 import styles from '../styles/form.module.scss';
-import { PWD_REG, USRNAME_REG } from '@/app/constants/regexpRools';
+import { PWD_REG, USRNAME_REG } from '@/app/global/constants/regexpRools';
 
 const FormItem = Form.Item;
 const Password = Input.Password;
@@ -14,6 +14,10 @@ const LoginForm: FC = () => {
   const [form] = Form.useForm();
 
   const [isRegister, setIsRegister] = useState(false);
+
+  const onRegister = () => {
+    setIsRegister(true);
+  };
 
   const onSubmit = () => {
     form.validateFields()
@@ -70,7 +74,7 @@ const LoginForm: FC = () => {
           { required: true, message: '密码不能为空' },
           () => ({
             validator: (_, val) => {
-              // 注册密码只验证是否为空
+              // 登录密码只验证是否为空
               if (!isRegister) {
                 return Promise.resolve();
               }
@@ -86,12 +90,42 @@ const LoginForm: FC = () => {
         <Password placeholder="请输入密码" suppressHydrationWarning allowClear />
       </FormItem>
 
-      
-      <FormItem className={classNames(styles['form-footer'])} label={null} >
+      {isRegister && (<FormItem
+        label="再次输入密码"
+        validateTrigger="onBlur"
+        name="password2"
+        rules={[
+          { required: true, message: '请再次输入密码' },
+          ({ getFieldValue }) => ({
+            validator: (_, val) => {
+              const pwd = getFieldValue('password');
+
+              if (!val || val === pwd) {
+                return Promise.resolve();
+              }
+              return Promise.reject();
+            },
+            message: '两次密码不同，请再次输入',
+          }),
+        ]}
+      >
+        <Password placeholder="请输入密码" suppressHydrationWarning allowClear />
+      </FormItem>)}
+
+      <div className={classNames(styles['form-footer'])} >
         <Button type="primary" onClick={onSubmit} >
-          提交
+          {isRegister ? '注册' : '提交'}
         </Button>
-      </FormItem>
+
+        {!isRegister && (<Button
+          className={classNames(styles['btn-register'])}
+          type="text"
+          size="small"
+          onClick={onRegister}
+        >
+          没有账户？点击注册
+        </Button>)}
+      </div>
     </Form>
   );
 };

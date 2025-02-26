@@ -8,7 +8,7 @@ import zhCN from 'antd/locale/zh_CN';
 import MainLayout from './components/mainLayout/index';
 
 import './globals.css';
-import { THEMES } from './constants/theme';
+import { THEMES } from './global/constants/theme';
 
 const RootLayout = ({ children }: React.PropsWithChildren) => (
   <html lang="zh-CN">
