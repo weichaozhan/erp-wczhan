@@ -2,10 +2,13 @@
 import { FC, useState } from 'react';
 import classNames from 'classnames';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Form, Input, Button, Tooltip, } from 'antd';
+import { Form, Input, Button, Tooltip, message } from 'antd';
 
 import styles from '../styles/form.module.scss';
+
 import { PWD_REG, USRNAME_REG } from '@/app/global/constants/regexpRools';
+import { loginApi, LoginApi } from '@/app/api/login';
+import { isNil } from 'lodash';
 
 const FormItem = Form.Item;
 const Password = Input.Password;
@@ -19,11 +22,26 @@ const LoginForm: FC = () => {
     setIsRegister(true);
   };
 
+  const login = (params: LoginApi) => {
+    loginApi(params)
+      .then(data => {
+        if (!isNil(data)) {
+          message.success('登录成功！');
+          localStorage.setItem('Authorization', `${data.type} ${data.accessToken}`);
+        }
+        console.log('login data', data);
+      });
+  };
+
   const onSubmit = () => {
     form.validateFields()
       .then(() => {
-        const values = form.getFieldsValue();
+        const values: LoginApi & { [key: string]: any } = form.getFieldsValue();
         console.log('values', values);
+
+        if (!isRegister) {
+          login(values);
+        }
       });
   };
 

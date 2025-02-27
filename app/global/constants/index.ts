@@ -1,3 +1,5 @@
+export const FETCH_URL = 'http://localhost:3001';
+
 export const HOME_PATH_NAME = '/';
 export const DESIGNER_PATH_NAME = '/designer';
 export const LOGIN_PAGE = '/login';
