@@ -9,7 +9,7 @@ interface State {
   setIsLogin: (goods: State['isLogin']) => void;
   setGoods: (goods: State['goods']) => void;
 }
-
+// useSyncExternalStore
 export const useStore = create<State>(set => ({
   isLogin: false,
   setIsLogin: (isLogin: State['isLogin']) => set(() => ({ isLogin })),

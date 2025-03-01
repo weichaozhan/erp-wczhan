@@ -1,19 +1,29 @@
 "use client"
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Form, Input, Button, Tooltip, message } from 'antd';
+import { Form, Input, Button, Tooltip, App } from 'antd';
 
 import styles from '../styles/form.module.scss';
 
 import { PWD_REG, USRNAME_REG } from '@/app/global/constants/regexpRools';
 import { loginApi, LoginApi } from '@/app/api/login';
 import { isNil } from 'lodash';
+import { useStore } from '@/app/store';
+import { AUTHORIZATION } from '@/app/global/constants';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const FormItem = Form.Item;
 const Password = Input.Password;
 
 const LoginForm: FC = () => {
+  const router = useRouter();
+  const urlParams = useSearchParams();
+
+  const { message } = App.useApp();
+
+  const setIsLogin = useStore(state => state.setIsLogin);
+
   const [form] = Form.useForm();
 
   const [isRegister, setIsRegister] = useState(false);
@@ -26,10 +36,20 @@ const LoginForm: FC = () => {
     loginApi(params)
       .then(data => {
         if (!isNil(data)) {
-          message.success('登录成功！');
-          localStorage.setItem('Authorization', `${data.type} ${data.accessToken}`);
+          message.open({
+            content: '登录成功！',
+            type: 'success',
+          });
+          const authStr = `${data.type} ${data.accessToken}`;
+          localStorage.setItem('Authorization', authStr);
+          setIsLogin(true);
+
+          const preUrl = urlParams.get('url');
+
+          if (preUrl) {
+            router.push(preUrl);
+          }
         }
-        console.log('login data', data);
       });
   };
 
@@ -37,13 +57,18 @@ const LoginForm: FC = () => {
     form.validateFields()
       .then(() => {
         const values: LoginApi & { [key: string]: any } = form.getFieldsValue();
-        console.log('values', values);
 
         if (!isRegister) {
           login(values);
         }
       });
   };
+
+  useEffect(() => {
+    // 跳转登录页重置登录状态
+    localStorage.removeItem(AUTHORIZATION);
+    setIsLogin(false);
+  }, []);
 
   return (
     <Form

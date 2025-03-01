@@ -1,6 +1,6 @@
 import message from 'antd/lib/message';
 
-import { FETCH_URL } from '../constants';
+import { AUTHORIZATION, FETCH_URL, HTTP_CODE } from '../constants';
 
 export interface ApiResponse {
   code: number;
@@ -16,7 +16,7 @@ interface FetchCustom {
   timeout?: number;
 }
 export async function fetchFunc<T>(params: FetchCustom) {
-  const { data, method, path,timeout = 5000 } = params;
+  const { data, method, path, timeout = 5000 } = params;
   const isGet = params.method === 'get';
 
   const opts: RequestInit = {
@@ -25,10 +25,16 @@ export async function fetchFunc<T>(params: FetchCustom) {
   };
 
   if (!isGet) {
+    const authStr = localStorage.getItem(AUTHORIZATION);
     opts.headers = {
       'Content-Type': 'application/json',
-      Accept: 'application/json'
+      Accept: 'application/json',
     };
+
+    if (authStr) {
+      opts.headers[AUTHORIZATION] = authStr;
+    }
+
     opts.body = JSON.stringify(data);
   }
 
@@ -51,13 +57,22 @@ export async function fetchFunc<T>(params: FetchCustom) {
       .then((res: ApiResponse) => {
         const { code, message: msg } = res;
         if (code !== 0) {
-          message.error(msg);
+          if (code === HTTP_CODE.Unauthorized) {
+            message.error('未授权，请先登录账号');
+            if (window) {
+              window.open('/login', '_self');
+            }
+          } else {
+            message.error(msg);
+          }
+
           resolve(undefined);
         }
         resolve(res.data);
       })
       .catch(err => {
         message.error(`${err}`);
+        console.error(err.toString());
         resolve(undefined);
       });
   });

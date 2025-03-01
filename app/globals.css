@@ -13,3 +13,11 @@ html, body {
   fill: currentColor;
   overflow: hidden;
 }
+
+.w100percent {
+  width: 100%;
+}
+
+.h100percent {
+  height: 100%;
+}
