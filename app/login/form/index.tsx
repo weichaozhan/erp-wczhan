@@ -155,6 +155,21 @@ const LoginForm: FC = () => {
         <Password placeholder="请输入密码" suppressHydrationWarning allowClear />
       </FormItem>)}
 
+      <div className={styles['login-code-wrapper']} >
+        <img width={100} height={30} src="http://pic.people.com.cn/NMediaFile/2025/0304/MAIN17410623510829PZVUZJKME.jpg" />
+        
+        {!isRegister && (<FormItem
+          label={null}
+          className={styles['form-item-login-code']}
+          validateTrigger="onBlur"
+          name="logincode"
+          required={true}
+        >
+          <Input placeholder='请输入验证码' />
+        </FormItem>)}
+      </div>
+
+
       <div className={classNames(styles['form-footer'])} >
         <Button type="primary" onClick={onSubmit} >
           {isRegister ? '注册' : '提交'}

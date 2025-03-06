@@ -4,6 +4,18 @@
   background-color: white;
   box-shadow: 6px 6px 10px -6px rgba(0,0,0,0.5);
   border-radius: 8px;
+
+  .login-code-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 24px 0;
+
+    .form-item-login-code {
+      margin: 0 0 0 12px!important;
+    }
+  }
   
   .form-footer {
     width: 100%;
