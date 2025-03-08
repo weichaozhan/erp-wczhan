@@ -24,17 +24,19 @@ export async function fetchFunc<T>(params: FetchCustom) {
     mode: 'cors',
   };
 
+  opts.headers = {};
+
+  const authStr = localStorage.getItem(AUTHORIZATION);
+  if (authStr) {
+    opts.headers[AUTHORIZATION] = authStr;
+  }
+  
   if (!isGet) {
-    const authStr = localStorage.getItem(AUTHORIZATION);
     opts.headers = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
-
-    if (authStr) {
-      opts.headers[AUTHORIZATION] = authStr;
-    }
-
+    opts.credentials = 'include';
     opts.body = JSON.stringify(data);
   }
 

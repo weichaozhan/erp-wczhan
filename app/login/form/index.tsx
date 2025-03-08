@@ -12,6 +12,7 @@ import { isNil } from 'lodash';
 import { useStore } from '@/app/store';
 import { AUTHORIZATION } from '@/app/global/constants';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { getCaptchaApi } from '@/app/api';
 
 const FormItem = Form.Item;
 const Password = Input.Password;
@@ -27,6 +28,13 @@ const LoginForm: FC = () => {
   const [form] = Form.useForm();
 
   const [isRegister, setIsRegister] = useState(false);
+
+  const [captcha, setCaptcha] = useState<undefined | string>(undefined);
+
+  const getCaptcha = async () => {
+    const img = await getCaptchaApi();
+    setCaptcha(img);
+  };
 
   const onRegister = () => {
     setIsRegister(true);
@@ -156,16 +164,19 @@ const LoginForm: FC = () => {
       </FormItem>)}
 
       <div className={styles['login-code-wrapper']} >
-        <img width={100} height={30} src="http://pic.people.com.cn/NMediaFile/2025/0304/MAIN17410623510829PZVUZJKME.jpg" />
+        <div
+          dangerouslySetInnerHTML={{ __html: captcha || '点击获取验证码' }}
+          onClick={() => getCaptcha()}
+        ></div>
         
         {!isRegister && (<FormItem
           label={null}
           className={styles['form-item-login-code']}
           validateTrigger="onBlur"
-          name="logincode"
+          name="code"
           required={true}
         >
-          <Input placeholder='请输入验证码' />
+          <Input placeholder='请输入验证码' suppressHydrationWarning />
         </FormItem>)}
       </div>
 
