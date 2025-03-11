@@ -14,6 +14,27 @@
 
     .form-item-login-code {
       margin: 0 0 0 12px!important;
+      &.register-code {
+        & > div {
+          justify-content: flex-end!important;
+        }
+
+        .code-wrapper {
+          margin-left: -8px;
+        }
+
+        &, & div {
+          flex-grow: 1;
+        }
+      }
+
+      .code-wrapper {
+        display: flex;
+
+        .email-code-input {
+          margin-right: 10px;
+        }
+      }
     }
   }
   

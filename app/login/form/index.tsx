@@ -2,17 +2,18 @@
 import { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Form, Input, Button, Tooltip, App } from 'antd';
+import { Form, Input, Button, Tooltip, App, Row, Col } from 'antd';
 
 import styles from '../styles/form.module.scss';
 
-import { PWD_REG, USRNAME_REG } from '@/app/global/constants/regexpRools';
+import { EMAIL_REG, PWD_REG, USRNAME_REG } from '@/app/global/constants/regexpRools';
 import { loginApi, LoginApi } from '@/app/api/login';
 import { isNil } from 'lodash';
 import { useStore } from '@/app/store';
 import { AUTHORIZATION } from '@/app/global/constants';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getCaptchaApi } from '@/app/api';
+import BtnEmailCode from './BtnEmailCode';
 
 const FormItem = Form.Item;
 const Password = Input.Password;
@@ -36,8 +37,9 @@ const LoginForm: FC = () => {
     setCaptcha(img);
   };
 
-  const onRegister = () => {
-    setIsRegister(true);
+  const toggleLoginRigister = () => {
+    setIsRegister(!isRegister);
+    form.resetFields();
   };
 
   const login = (params: LoginApi) => {
@@ -163,21 +165,48 @@ const LoginForm: FC = () => {
         <Password placeholder="请输入密码" suppressHydrationWarning allowClear />
       </FormItem>)}
 
+      {isRegister && <FormItem
+        label="邮箱"
+        validateTrigger="onBlur"
+        name="email"
+        rules={[
+          { required: true, message: '请输入邮箱' },
+          () => ({
+            validator: (_, email) => {
+              if (!email || EMAIL_REG.test(email)) {
+                return Promise.resolve();
+              }
+              return Promise.reject();
+            },
+            message: '邮箱格式错误，请重新输入',
+          }),
+        ]}
+      >
+        <Input className={styles['email-code-input']} placeholder='请输入邮箱' suppressHydrationWarning />
+      </FormItem>}
+
       <div className={styles['login-code-wrapper']} >
-        <div
+        {!isRegister && <div
           dangerouslySetInnerHTML={{ __html: captcha || '点击获取验证码' }}
           onClick={() => getCaptcha()}
-        ></div>
+        ></div>}
         
-        {!isRegister && (<FormItem
+        <FormItem
           label={null}
-          className={styles['form-item-login-code']}
+          className={classNames(
+            styles['form-item-login-code'],
+            isRegister ? styles['register-code'] : undefined,
+          )}
           validateTrigger="onBlur"
           name="code"
-          required={true}
+          rules={[{ required: true, message: '请输入验证码' }]}
         >
-          <Input placeholder='请输入验证码' suppressHydrationWarning />
-        </FormItem>)}
+          <div className={styles['code-wrapper']}>
+            <Input className={isRegister ? styles['email-code-input'] : undefined} placeholder='请输入验证码' suppressHydrationWarning />
+            
+            {isRegister && <BtnEmailCode form={form} />}
+          </div>
+        </FormItem>
       </div>
 
 
@@ -186,14 +215,14 @@ const LoginForm: FC = () => {
           {isRegister ? '注册' : '提交'}
         </Button>
 
-        {!isRegister && (<Button
+        <Button
           className={classNames(styles['btn-register'])}
           type="text"
           size="small"
-          onClick={onRegister}
+          onClick={toggleLoginRigister}
         >
-          没有账户？点击注册
-        </Button>)}
+          {isRegister ? '已有账户？去登录' : '没有账户？点击注册'}
+        </Button>
       </div>
     </Form>
   );
