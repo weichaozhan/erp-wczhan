@@ -1,8 +1,9 @@
 "use client"
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Form, Input, Button, Tooltip, App, Row, Col } from 'antd';
+import { Form, Input, Button, Tooltip, App } from 'antd';
+import { debounce } from 'lodash';
 
 import styles from '../styles/form.module.scss';
 
@@ -14,6 +15,7 @@ import { AUTHORIZATION } from '@/app/global/constants';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getCaptchaApi } from '@/app/api';
 import BtnEmailCode from './BtnEmailCode';
+import { CreateUsersApi, createUsersApi } from '@/app/api/user';
 
 const FormItem = Form.Item;
 const Password = Input.Password;
@@ -22,28 +24,28 @@ const LoginForm: FC = () => {
   const router = useRouter();
   const urlParams = useSearchParams();
 
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
 
   const setIsLogin = useStore(state => state.setIsLogin);
 
   const [form] = Form.useForm();
 
   const [isRegister, setIsRegister] = useState(false);
-
   const [captcha, setCaptcha] = useState<undefined | string>(undefined);
+  const [loading, setLoading] = useState(false);
 
   const getCaptcha = async () => {
     const img = await getCaptchaApi();
     setCaptcha(img);
   };
 
-  const toggleLoginRigister = () => {
+  const toggleLoginRigister = useCallback(() => {
     setIsRegister(!isRegister);
     form.resetFields();
-  };
+  }, [isRegister, form]);
 
-  const login = (params: LoginApi) => {
-    loginApi(params)
+  const login = async (params: LoginApi) => {
+    await loginApi(params)
       .then(data => {
         if (!isNil(data)) {
           message.open({
@@ -56,23 +58,43 @@ const LoginForm: FC = () => {
 
           const preUrl = urlParams.get('url');
 
-          if (preUrl) {
-            router.push(preUrl);
-          }
+          router.push(preUrl || '/');
         }
       });
   };
 
-  const onSubmit = () => {
+  const createUser = async (params: CreateUsersApi) => {
+    await createUsersApi(params);
+    modal.success({
+      content: '用户注册成功！',
+      okText: '去登录',
+      onOk: () => {
+        setIsRegister(false);
+        form.resetFields();
+      },
+    });
+  };
+
+  const onSubmit = useCallback(debounce(() => {
     form.validateFields()
-      .then(() => {
-        const values: LoginApi & { [key: string]: any } = form.getFieldsValue();
+      .then(async () => {
+        const values: CreateUsersApi & { [key: string]: any } = form.getFieldsValue();
 
-        if (!isRegister) {
-          login(values);
+        setLoading(true);
+
+        try {
+          if (!isRegister) {
+            await login(values);
+          } else {
+            await createUser(values);
+          }
+          setLoading(false);
+        } catch {
+          setLoading(false);
         }
+
       });
-  };
+  }, 200), [form, isRegister, router, urlParams]);
 
   useEffect(() => {
     // 跳转登录页重置登录状态
@@ -97,7 +119,11 @@ const LoginForm: FC = () => {
           { required: true, message: '用户名不能为空' },
           () => ({
             validator: (_, val) => {
-              if (!val || USRNAME_REG.test(val)) {
+              if (!isRegister) {
+                return Promise.resolve();
+              }
+
+              if (!val || (USRNAME_REG.test(val))) {
                 return Promise.resolve();
               }
               return Promise.reject();
@@ -197,7 +223,6 @@ const LoginForm: FC = () => {
             styles['form-item-login-code'],
             isRegister ? styles['register-code'] : undefined,
           )}
-          validateTrigger="onBlur"
           name="code"
           rules={[{ required: true, message: '请输入验证码' }]}
         >
@@ -211,7 +236,11 @@ const LoginForm: FC = () => {
 
 
       <div className={classNames(styles['form-footer'])} >
-        <Button type="primary" onClick={onSubmit} >
+        <Button
+          type="primary"
+          loading={loading}
+          onClick={onSubmit}
+        >
           {isRegister ? '注册' : '提交'}
         </Button>
 

@@ -26,7 +26,7 @@ const Auth: FC = () => {
         const urlStrEncode = urlStr ? encodeURIComponent(urlStr) : '';
         
         if (prePathNameRef.current !== undefined) {
-          message.success('未授权，请先登录！');
+          message.error('未授权，请先登录！');
         }
         router.push(`/login${urlStr ? `?url=${urlStrEncode}` : ''}`);
       }
