@@ -4,7 +4,8 @@ import { AUTHORIZATION, COMMON_PATHS } from '@/app/global/constants';
 import { useStore } from '@/app/store';
 import { App } from 'antd';
 import { useRouter, usePathname } from 'next/navigation';
-import { FC, useEffect, useMemo, useRef } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef } from 'react';
+import { once } from 'lodash';
 
 
 const Auth: FC = () => {
@@ -12,13 +13,16 @@ const Auth: FC = () => {
   const router = useRouter();
   const pathname = usePathname();
 
+  const isBrowser  = typeof window !== 'undefined';
+
   const prePathNameRef = useRef<string | undefined>(undefined);
+  const isAfterGetManuRef = useRef(false);
 
   const { setIsLogin, isLogin, setMenus, menus } = useStore(state => state);
 
   const userPaths = useMemo(() => {
     const paths = [...COMMON_PATHS];
-    menus.forEach(menu => {
+    menus?.forEach(menu => {
       const { path } = menu;
       if (path) {
         paths.push(path);
@@ -27,19 +31,30 @@ const Auth: FC = () => {
     return paths;
   }, [menus]);
 
-  useEffect(() => {
-    if (isLogin) {
+  // get menu data, excute once
+  const handleMenus = useCallback(once(() => {
+    if (isBrowser && isLogin && !isAfterGetManuRef.current) {
       getMenusApi()
         .then(data => {
           console.log('getMenusApi', data);
           setMenus(data ?? []);
+        })
+        .finally(() => {
+          isAfterGetManuRef.current = true;
         });
     }
+  }), [isLogin, isAfterGetManuRef.current, isBrowser]);
+
+  useEffect(() => {
+    handleMenus();
   }, [isLogin]);
 
   useEffect(() => {
-    if (!userPaths.includes(pathname)) {
-      router.push('/forbidden');
+    if (isBrowser && isAfterGetManuRef.current) {
+      console.log('userPaths', userPaths, 'pathname', pathname);
+      if (!userPaths.includes(pathname)) {
+        router.push('/forbidden');
+      }
     }
   }, [userPaths, pathname]);
 
@@ -60,7 +75,7 @@ const Auth: FC = () => {
       }
     }
 
-    console.log('pathname', pathname, 'prePathNameRef', prePathNameRef.current);
+    // console.log('pathname', pathname, 'prePathNameRef', prePathNameRef.current);
     return () => {
       prePathNameRef.current = pathname;
     }

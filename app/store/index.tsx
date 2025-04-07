@@ -17,7 +17,7 @@ interface State {
 }
 // useSyncExternalStore
 export const useStore = create<State>(set => ({
-  isLogin: global.localStorage ? !!localStorage.getItem(AUTHORIZATION) : false,
+  isLogin: typeof window !== 'undefined' ? !!localStorage.getItem(AUTHORIZATION) : false,
   setIsLogin: (isLogin: State['isLogin']) => set(() => ({ isLogin })),
   
   goods: undefined,
