@@ -4,6 +4,7 @@ import { Content } from 'antd/es/layout/layout';
 import classNames from 'classnames';
 
 import styles from './styles/index.module.scss';
+import globalStyles from '../global.module.scss';
 
 import PreviewSider from './components/previewSider';
 import ToolsSider from './components/toolsSider';
@@ -17,7 +18,7 @@ const Designer = () => {
         <ToolsSider />
 
         <Content className={classNames(styles.content)}>
-          <div style={{ height: '100%', flexGrow: 1, }}>
+          <div className={globalStyles['content-wrapper']} style={{ height: '100%', flexGrow: 1, }}>
             content
           </div>
           <PreviewSider />

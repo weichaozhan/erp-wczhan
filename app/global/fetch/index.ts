@@ -11,7 +11,7 @@ export interface ApiResponse {
 
 interface FetchCustom {
   method: 'get' | 'post' | 'put' | 'patch' | 'delete';
-  data: object;
+  data?: object;
   path: string;
   timeout?: number;
 }
@@ -43,7 +43,7 @@ export async function fetchFunc<T>(params: FetchCustom) {
   let query = '';
 
   if (isGet) {
-    const kvList = Object.entries(data);
+    const kvList = Object.entries(data ?? {});
     for (let i = 0; i < kvList.length; i++) {
       const [key, val] = kvList[i];
 

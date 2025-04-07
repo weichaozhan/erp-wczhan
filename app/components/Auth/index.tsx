@@ -1,9 +1,10 @@
 "use client"
-import { AUTHORIZATION } from '@/app/global/constants';
+import { getMenusApi } from '@/app/api';
+import { AUTHORIZATION, COMMON_PATHS } from '@/app/global/constants';
 import { useStore } from '@/app/store';
 import { App } from 'antd';
 import { useRouter, usePathname } from 'next/navigation';
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect, useMemo, useRef } from 'react';
 
 
 const Auth: FC = () => {
@@ -13,7 +14,34 @@ const Auth: FC = () => {
 
   const prePathNameRef = useRef<string | undefined>(undefined);
 
-  const setIsLogin = useStore(state => state.setIsLogin);
+  const { setIsLogin, isLogin, setMenus, menus } = useStore(state => state);
+
+  const userPaths = useMemo(() => {
+    const paths = [...COMMON_PATHS];
+    menus.forEach(menu => {
+      const { path } = menu;
+      if (path) {
+        paths.push(path);
+      }
+    });
+    return paths;
+  }, [menus]);
+
+  useEffect(() => {
+    if (isLogin) {
+      getMenusApi()
+        .then(data => {
+          console.log('getMenusApi', data);
+          setMenus(data ?? []);
+        });
+    }
+  }, [isLogin]);
+
+  useEffect(() => {
+    if (!userPaths.includes(pathname)) {
+      router.push('/forbidden');
+    }
+  }, [userPaths, pathname]);
 
   useEffect(() => {
     const authStr = localStorage.getItem(AUTHORIZATION);

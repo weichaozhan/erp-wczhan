@@ -1,5 +1,6 @@
 import { FETCH_URL } from '../global/constants';
 import { fetchFunc } from '../global/fetch';
+import { GetEmailCaptchaApi, GetEmailCaptchaApiReturn, GetMenusApiData } from '../types';
 
 export const getCaptchaApi = () => {
   return fetch(
@@ -17,15 +18,6 @@ export const getCaptchaApi = () => {
     });
 };
 
-interface GetEmailCaptchaApi {
-  email: string;
-}
-interface GetEmailCaptchaApiReturn {
-  code: number;
-  message: string;
-  data: any;
-}
-
 export const getEmailCaptchaApi = (body: GetEmailCaptchaApi) => {
   return fetchFunc<GetEmailCaptchaApiReturn>({
     method: 'post',
@@ -35,5 +27,15 @@ export const getEmailCaptchaApi = (body: GetEmailCaptchaApi) => {
     .then(data => {
       console.log(data);
       return data as GetEmailCaptchaApiReturn;
+    });
+};
+
+export const getMenusApi = () => {
+  return fetchFunc<GetMenusApiData>({
+    method: 'get',
+    path: '/menus',
+  })
+    .then(data => {
+      return data;
     });
 };

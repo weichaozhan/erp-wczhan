@@ -9,25 +9,30 @@ import mainLayoutStyle from '../mainLayout/mainLayout.module.scss';
 
 import Tools from './toos';
 import { useStore } from '@/app/store';
+import { useEffect, useState } from 'react';
 
 const HeaderContent = () => {
   const isLogin = useStore(state => state.isLogin);
 
-  return isLogin ? (
-    <Header className={classNames(mainLayoutStyle.header)}>
-      <div className={classNames(styles.wrapper)}>
-        <Link href="/" className={classNames(styles['title-wrapper'])} >
-          <h1 className={classNames(styles.title)}>
-            简易 ERP
-          </h1>
-        </Link>
+  const [isHide, setIsHide] = useState(false);
 
-        <div id="potalTools" className={classNames(styles['potal-tools-wrapper'])} />
+  useEffect(() => {
+    setIsHide(!isLogin);
+  }, [isLogin]);
 
-        <Tools />
-      </div>
-    </Header>
-  ) : <></>;
+  return <Header className={classNames(isHide ? mainLayoutStyle.hiden : mainLayoutStyle.header)}>
+    <div className={classNames(styles.wrapper)}>
+      <Link href="/" className={classNames(styles['title-wrapper'])} >
+        <h1 className={classNames(styles.title)}>
+          简易 ERP
+        </h1>
+      </Link>
+
+      <div id="potalTools" className={classNames(styles['potal-tools-wrapper'])} />
+
+      <Tools />
+    </div>
+  </Header>;
 };
 
 export default HeaderContent;

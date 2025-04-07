@@ -7,18 +7,27 @@ import { usePathHanlder } from '@/app/hooks';
 
 import styles from './mainLayout.module.scss';
 import { useStore } from '@/app/store';
+import { useEffect, useState } from 'react';
 
 const FooterLayout = () => {
-  const { isDesigner, isNodeSider } = usePathHanlder();
+  const { isDesigner } = usePathHanlder();
 
   const isLogin = useStore(state => state.isLogin);
 
+  const [isHide, setIsHide] = useState(false);
+
+  useEffect(() => {
+    setIsHide(isDesigner || !isLogin);
+  }, [isDesigner, isLogin]);
+
   return (
-    isLogin ? (
-      <Footer className={classNames(isDesigner ? styles.hiden : styles.footer)}>
-        JAMES ZHAN 创作
-      </Footer>
-    ) : <></>
+    <Footer
+      className={classNames(
+        isHide ? styles.hiden : styles.footer,
+      )}
+    >
+      JAMES ZHAN 创作
+    </Footer>
   );
 };
 
