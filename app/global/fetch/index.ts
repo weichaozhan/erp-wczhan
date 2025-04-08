@@ -33,6 +33,7 @@ export async function fetchFunc<T>(params: FetchCustom) {
   
   if (!isGet) {
     opts.headers = {
+      ...opts.headers,
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
@@ -53,7 +54,7 @@ export async function fetchFunc<T>(params: FetchCustom) {
 
   const url = `${FETCH_URL}${path}${isGet ? `?${query}` : ''}`;
 
-  return new Promise<T | undefined>((resolve) => {
+  return new Promise<T | undefined>((resolve, reject) => {
     fetch(url, opts)
       .then(res => res.json())
       .then((res: ApiResponse) => {
@@ -68,14 +69,14 @@ export async function fetchFunc<T>(params: FetchCustom) {
             message.error(msg);
           }
 
-          resolve(undefined);
+          reject(msg);
         }
         resolve(res.data);
       })
       .catch(err => {
         message.error(`${err}`);
         console.error(err.toString());
-        resolve(undefined);
+        reject(err);
       });
   });
 };

@@ -10,3 +10,10 @@ export type ModuleListNode = Partial<TreeDataNode> & SysModule & Permission & {
   nodetype?: ModuleNodeType;
   children?: ModuleListNode[];
 };
+
+export interface CreatePermission {
+  name: string;
+  nameDesc: string;
+  parentID: number;
+  description?: string;
+}

@@ -23,12 +23,8 @@ export interface CreateUsersApi {
   password: string;
   code: string;
 }
-interface CreateUsersApiReturn {
-  code: number;
-  message: string;
-}
 export const createUsersApi = (body: CreateUsersApi) => {
-  return fetchFunc<CreateUsersApiReturn>({
+  return fetchFunc({
     method: 'post',
     data: body,
     path: '/user',

@@ -2,3 +2,5 @@ export const PWD_REG = /^(?=.*\d)(?!.*(\d)\1{2})(?!.*(012|123|234|345|456|567|67
 export const USRNAME_REG = /^(\d|\w|_|[\u4e00-\u9fa5])+$/;
 
 export const EMAIL_REG = /^\w+(-+.\w+)*@\w+(-.\w+)*.\w+(-.\w+)*$/;
+
+export const COMMON_NAME = /^(\d|\w|_)+$/;
