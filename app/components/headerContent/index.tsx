@@ -7,7 +7,7 @@ import { Header } from 'antd/es/layout/layout';
 import styles from './index.module.scss';
 import mainLayoutStyle from '../mainLayout/mainLayout.module.scss';
 
-import Tools from './toos';
+import Tools from './tools';
 import { useStore } from '@/app/store';
 import { useEffect, useState } from 'react';
 

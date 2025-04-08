@@ -21,3 +21,18 @@ export const AUTHORIZATION = 'Authorization';
 export const HTTP_CODE = {
   Unauthorized: 401,
 };
+
+export const MODULE_TYPE_MAP = {
+  module: {
+    name: '模块',
+    color: 'magenta',
+  },
+  menu: {
+    name: '菜单',
+    color: 'cyan',
+  },
+  permission: {
+    name: '权限',
+    color: 'orange',
+  },
+};

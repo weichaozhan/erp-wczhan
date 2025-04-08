@@ -2,7 +2,7 @@ import classNames from 'classnames';
 
 import Iconfont from '../iconfont';
 
-import styles from './toos.module.scss';
+import styles from './tools.module.scss';
 
 const Tools = () => {
   return (

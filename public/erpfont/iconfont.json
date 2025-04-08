@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1269",
+      "name": "加",
+      "font_class": "jia",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "17937296",
+      "name": "减2",
+      "font_class": "jian2",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
+      "icon_id": "1446454",
+      "name": "plus",
+      "font_class": "plus",
+      "unicode": "e620",
+      "unicode_decimal": 58912
+    },
+    {
       "icon_id": "40344394",
       "name": "员工雇员肖像",
       "font_class": "officer",
