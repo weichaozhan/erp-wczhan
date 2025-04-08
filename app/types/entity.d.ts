@@ -7,6 +7,8 @@ export interface Permission {
   createTime?: Date;
   updateTime?: Date;
   sysModule?: SysModule;
+  createBy?: string;
+  createrId?: number;
 }
 
 export interface SysModule {
@@ -18,6 +20,7 @@ export interface SysModule {
   icon?: string;
   path?: string;
   createBy?: string;
+  createrId?: number;
   isMenu?: boolean;
   description?: string;
   createTime?: Date;

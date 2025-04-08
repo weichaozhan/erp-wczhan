@@ -1,7 +1,7 @@
 "use client"
-import { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { once } from 'lodash';
-import { Button, Tag, Tooltip, Tree } from 'antd';
+import { Button, Spin, Tag, Tooltip, Tree } from 'antd';
 
 import { getAuthListApi } from '../../api/auth';
 import { ModuleListNode } from '../../types/auth';
@@ -9,8 +9,13 @@ import { ModuleListNode } from '../../types/auth';
 import styles from './styles/authTree.module.scss';
 import { MODULE_TYPE_MAP } from '../../global/constants';
 import Iconfont from '../iconfont';
+import { AuthTreeRef } from './types';
 
 interface AuthTreeProps {
+  authTreeRef?: React.Ref<AuthTreeRef>;
+  checkable?: boolean;
+  defaultExpandAll?: boolean;
+  children?: React.ReactNode;
   onAddModule?: (module: ModuleListNode) => void;
   onDelModule?: (module: ModuleListNode) => void;
   onAddMenu?: (module: ModuleListNode) => void;
@@ -20,6 +25,10 @@ interface AuthTreeProps {
 }
 
 const AuthTree: FC<AuthTreeProps> = ({
+  authTreeRef,
+  checkable = false,
+  defaultExpandAll = true,
+  children,
   onAddMenu,
   onAddModule,
   onAddPermission,
@@ -27,9 +36,13 @@ const AuthTree: FC<AuthTreeProps> = ({
   onDelModule,
   onDelPermission,
 }) => {
-  const [treeData, setTreeData] = useState<ModuleListNode[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const [treeData, setTreeData] = useState<ModuleListNode[] | undefined>(undefined);
 
   const getAuthList = async () => {
+    setLoading(true);
+
     const data = await getAuthListApi();
 
     const map = new Map<number, ModuleListNode>();
@@ -40,8 +53,6 @@ const AuthTree: FC<AuthTreeProps> = ({
       if (id) {
         const authTemp = auth as ModuleListNode;
         map.set(id, authTemp);
-
-        const styleModule = isMenu ? styles['menu-icon'] : styles['module-icon'];
 
         const addClick = isMenu ? onAddMenu : onAddModule;
         const delClick = isMenu ? onDelMenu : onDelModule;
@@ -55,29 +66,33 @@ const AuthTree: FC<AuthTreeProps> = ({
           </Tag>
           {authTemp.nameToShow}
 
-          <Tooltip title={`添加${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
-            <Button
-              onClick={() => addClick?.(authTemp)}
-              className={styles['option-btn']}
-              type="text"
-              shape="circle"
-              size="small"
-            >
-              <Iconfont classes={[styleModule]} xlinkHref="#icon-jia" />
-            </Button>
-          </Tooltip>
+          {id !== 1 ? (
+            <>
+              <Tooltip title={`添加${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
+                <Button
+                  onClick={() => addClick?.(authTemp)}
+                  className={styles['option-btn']}
+                  type="text"
+                  shape="circle"
+                  size="small"
+                >
+                  <Iconfont classes={[styles['module-icon']]} xlinkHref="#icon-jia" />
+                </Button>
+              </Tooltip>
 
-          <Tooltip title={`删除${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
-            <Button
-              onClick={() => delClick?.(authTemp)}
-              className={styles['option-btn']}
-              type="text"
-              shape="circle"
-              size="small"
-            >
-              <Iconfont classes={[styleModule]} xlinkHref="#icon-jian2" />
-            </Button>
-          </Tooltip>
+              <Tooltip title={`删除${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
+                <Button
+                  onClick={() => delClick?.(authTemp)}
+                  className={styles['option-btn']}
+                  type="text"
+                  shape="circle"
+                  size="small"
+                >
+                  <Iconfont classes={[styles['module-icon']]} xlinkHref="#icon-jian2" />
+                </Button>
+              </Tooltip>
+            </>
+          ): <></>}
 
           <Tooltip title={`添加${MODULE_TYPE_MAP.permission.name}`}>
             <Button
@@ -105,14 +120,26 @@ const AuthTree: FC<AuthTreeProps> = ({
             {permission.nameDesc}
 
             <Tooltip title={'添加权限'}>
-              <Button className={styles['option-btn']} type="text" shape="circle" size="small">
+              <Button
+                className={styles['option-btn']}
+                onClick={() => onAddPermission?.(permission)}
+                type="text"
+                shape="circle"
+                size="small"
+              >
                 <Iconfont classes={[styles['permission-icon']]} xlinkHref="#icon-jia" />
               </Button>
             </Tooltip>
 
-            <Tooltip title={'添加权限'}>
-              <Button className={styles['option-btn']} type="text" shape="circle" size="small">
-                <Iconfont classes={[styles['permission-icon']]} xlinkHref="#icon-jia" />
+            <Tooltip title={'删除权限'}>
+              <Button
+                className={styles['option-btn']}
+                onClick={() => onDelPermission?.(permission)}
+                type="text"
+                shape="circle"
+                size="small"
+              >
+                <Iconfont classes={[styles['permission-icon']]} xlinkHref="#icon-jian2" />
               </Button>
             </Tooltip>
           </div>,
@@ -129,19 +156,34 @@ const AuthTree: FC<AuthTreeProps> = ({
       }
     });
     setTreeData(tree);
+
+    setLoading(false);
   };
 
   const getAuthListMounted = useCallback(once(getAuthList), []);
+
+  useImperativeHandle(authTreeRef, () => ({
+    refresh: getAuthList,
+  }), []);
 
   useEffect(() => {
     getAuthListMounted();
   }, []);
 
   return (
-    <Tree
-      treeData={treeData}
-      checkable={false}
-    />
+    <div className={styles['auth-tree-wrapper']}>
+      <div className={styles['auth-tree-spin-wrapper']}>
+        <Spin spinning={loading} />
+      </div>
+
+      {children}
+
+      {treeData !== undefined && <Tree
+        treeData={treeData}
+        checkable={checkable}
+        defaultExpandAll={defaultExpandAll}
+      />}
+    </div>
   )
 }
 
