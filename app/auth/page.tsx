@@ -14,17 +14,24 @@ import { ModuleListNode } from '../types/auth';
 import { Permission } from '../types/entity';
 import { isNil } from 'lodash';
 import { delPermissionApi } from '../api/auth';
+import ModuleForm from './forms/ModuleForm';
 
 function AuthPage() {
   const { modal, message } = App.useApp();
 
   const authTreeRef = useRef<AuthTreeRef | null>(null);
 
+  // permission
   const [permVisible, setPermVisible] = useState(false);
   const [permParentId, setPermParentId] = useState<number>();
+  // module & menu
+  const [isEdit, setIsEdit] = useState(false);
+  const [moduleVisible, setModuleVisible] = useState(false);
+  const [moduleParentId, setModuleParentId] = useState<number>();
+  const [moduleData, setModuleData] = useState<ModuleListNode>();
 
+  // permission handlers
   const openPermissionForm = (module: ModuleListNode) => {
-    console.log('module', module);
     setPermParentId(module.id);
     setPermVisible(true);
   };
@@ -34,16 +41,30 @@ function AuthPage() {
       icon: <DeleteFilled />,
       content: `确认删除权限【${permission.nameDesc}】？`,
       okType: 'danger',
+      cancelText: '取消',
+      okText: '确认',
       onOk: async () => {
         const { id } = permission;
         if (!isNil(id)) {
           await delPermissionApi(id);
           authTreeRef.current?.refresh?.();
-          message.success('删除权限【${permission.nameDesc}】成功！');
+          message.success(`删除权限【${permission.nameDesc}】成功！`);
         }
       },
     });
   }
+
+  // module handlers
+  const openModuleForm = (module?: ModuleListNode, isEditBtn = false) => {
+    setIsEdit(isEditBtn);
+    
+    if (isEditBtn) {
+      setModuleData(module);
+    } else {
+      setModuleParentId(module?.id);
+    }
+    setModuleVisible(true);
+  };
 
   return (
     <>
@@ -51,11 +72,19 @@ function AuthPage() {
         className={classNames(globalStyles['content-wrapper'], styles['auth-content-wrapper'])}
       >
         <AuthTree
+          actionable
           authTreeRef={ref => { authTreeRef.current = ref }}
+
           onAddPermission={openPermissionForm}
           onDelPermission={delPermission}
+
+          onAddModule={(module) => openModuleForm(module, false)}
+          onEditModule={(module) => openModuleForm(module, true)}
         >
-          <Button size="small" >
+          <Button
+            size="small"
+            onClick={() => openModuleForm(undefined, false)}
+          >
             添加模块
           </Button>
 
@@ -63,10 +92,26 @@ function AuthPage() {
         </AuthTree>
       </div>
 
+      <ModuleForm
+        isEdit={isEdit}
+        isOpen={moduleVisible}
+        parentID={moduleParentId}
+        moduleData={moduleData}
+        closeModal={() => {
+          setModuleParentId(undefined);
+          setModuleData(undefined);
+          setModuleVisible(false);
+        }}
+        onOkSuccess={() => { authTreeRef.current?.refresh() }}
+      />
+      
       <PermissionForm
         isOpen={permVisible}
         parentID={permParentId}
-        closeModal={() => setPermVisible(false)}
+        closeModal={() => {
+          setPermParentId(undefined);
+          setPermVisible(false);
+        }}
         onOkSuccess={() => { authTreeRef.current?.refresh() }}
       />
     </>

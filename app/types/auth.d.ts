@@ -17,3 +17,11 @@ export interface CreatePermission {
   parentID: number;
   description?: string;
 }
+
+export interface CreateSysModule {
+  name: string;
+  nameToShow: string;
+  isMenu: boolean;
+  parentID?: number;
+  path?: string;
+}

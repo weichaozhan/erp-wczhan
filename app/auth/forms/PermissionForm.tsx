@@ -75,7 +75,7 @@ const PermissionForm: FC<FormProps> = ({
   >
     <Form
       form={form}
-      name="login"
+      name="permission"
       labelCol={{ span: 6 }}
       labelAlign="left"
       wrapperCol={{ span: 18 }}

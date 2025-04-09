@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useImperativeHandle, useState } from
 import { once } from 'lodash';
 import { Button, Spin, Tag, Tooltip, Tree } from 'antd';
 
-import { MODULE_TYPE_MAP } from '../../global/constants';
+import { MODULE_TYPE_MAP, ROOT_MODULE_ID } from '../../global/constants';
 import { getAuthListApi } from '../../api/auth';
 import { ModuleListNode } from '../../types/auth';
 import { AuthTreeRef } from './types';
@@ -15,12 +15,14 @@ import styles from './styles/authTree.module.scss';
 interface AuthTreeProps {
   authTreeRef?: React.Ref<AuthTreeRef>;
   checkable?: boolean;
+  actionable?: boolean;
   defaultExpandAll?: boolean;
   children?: React.ReactNode;
   onAddModule?: (module: ModuleListNode) => void;
   onDelModule?: (module: ModuleListNode) => void;
   onAddPermission?: (module: ModuleListNode) => void;
   onDelPermission?: (module: ModuleListNode) => void;
+  onEditModule?: (module: ModuleListNode) => void;
 }
 
 const AuthTree: FC<AuthTreeProps> = ({
@@ -28,10 +30,12 @@ const AuthTree: FC<AuthTreeProps> = ({
   checkable = false,
   defaultExpandAll = true,
   children,
+  actionable = false,
   onAddModule,
   onAddPermission,
   onDelModule,
   onDelPermission,
+  onEditModule,
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -56,50 +60,68 @@ const AuthTree: FC<AuthTreeProps> = ({
           authTemp.key=`module-${id}`;
           authTemp.nodetype = isMenu ? 'menu' : 'module';
           authTemp.title = <div>
-            <Tag color={MODULE_TYPE_MAP[authTemp.nodetype].color}>
-              {MODULE_TYPE_MAP[authTemp.nodetype].name}
+            <Tag color={MODULE_TYPE_MAP.module.color}>
+              {MODULE_TYPE_MAP.module.name}
             </Tag>
+
+            {isMenu && <Tag color={MODULE_TYPE_MAP.menu.color}>
+              {MODULE_TYPE_MAP.menu.name}
+            </Tag>}
+
             {authTemp.nameToShow}
-  
-            {id !== 1 ? (
-              <>
-                <Tooltip title={`添加${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
-                  <Button
-                    onClick={() => onAddModule?.(authTemp)}
-                    className={styles['option-btn']}
-                    type="text"
-                    shape="circle"
-                    size="small"
-                  >
-                    <Iconfont classes={[styles['module-icon']]} xlinkHref="#icon-jia" />
-                  </Button>
-                </Tooltip>
-  
-                <Tooltip title={`删除${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
-                  <Button
-                    onClick={() => onDelModule?.(authTemp)}
-                    className={styles['option-btn']}
-                    type="text"
-                    shape="circle"
-                    size="small"
-                  >
-                    <Iconfont classes={[styles['module-icon']]} xlinkHref="#icon-jian2" />
-                  </Button>
-                </Tooltip>
-              </>
-            ): <></>}
-  
-            <Tooltip title={`添加${MODULE_TYPE_MAP.permission.name}`}>
-              <Button
-                className={styles['option-btn']}
-                onClick={() => onAddPermission?.(authTemp)}
-                type="text"
-                shape="circle"
-                size="small"
-              >
-                <Iconfont classes={[styles['permission-icon']]} xlinkHref="#icon-jia" />
-              </Button>
-            </Tooltip>
+            {actionable && <>
+              {id !== ROOT_MODULE_ID ? (
+                <>
+                  <Tooltip title={`修改${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
+                    <Button
+                      onClick={() => onEditModule?.(authTemp)}
+                      className={styles['option-btn']}
+                      type="text"
+                      shape="circle"
+                      size="small"
+                    >
+                      <Iconfont classes={[styles['module-icon']]} xlinkHref="#icon-edit" />
+                    </Button>
+                  </Tooltip>
+
+                  <Tooltip title={`添加${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
+                    <Button
+                      onClick={() => onAddModule?.(authTemp)}
+                      className={styles['option-btn']}
+                      type="text"
+                      shape="circle"
+                      size="small"
+                    >
+                      <Iconfont classes={[styles['module-icon']]} xlinkHref="#icon-jia" />
+                    </Button>
+                  </Tooltip>
+    
+                  <Tooltip title={`删除${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
+                    <Button
+                      onClick={() => onDelModule?.(authTemp)}
+                      className={styles['option-btn']}
+                      type="text"
+                      shape="circle"
+                      size="small"
+                    >
+                      <Iconfont classes={[styles['module-icon']]} xlinkHref="#icon-jian2" />
+                    </Button>
+                  </Tooltip>
+                </>
+              ): <></>}
+    
+              <Tooltip title={`添加${MODULE_TYPE_MAP.permission.name}`}>
+                <Button
+                  className={styles['option-btn']}
+                  onClick={() => onAddPermission?.(authTemp)}
+                  type="text"
+                  shape="circle"
+                  size="small"
+                >
+                  <Iconfont classes={[styles['permission-icon']]} xlinkHref="#icon-jia" />
+                </Button>
+              </Tooltip>
+            </>}
           </div>;
   
           authTemp.permissions?.forEach(permission => {
@@ -114,7 +136,7 @@ const AuthTree: FC<AuthTreeProps> = ({
               
               {permission.nameDesc}
   
-              <Tooltip title={'删除权限'}>
+              {actionable && <Tooltip title={'删除权限'}>
                 <Button
                   className={styles['option-btn']}
                   onClick={() => onDelPermission?.(permission)}
@@ -124,7 +146,7 @@ const AuthTree: FC<AuthTreeProps> = ({
                 >
                   <Iconfont classes={[styles['permission-icon']]} xlinkHref="#icon-jian2" />
                 </Button>
-              </Tooltip>
+              </Tooltip>}
             </div>,
             });
           });
