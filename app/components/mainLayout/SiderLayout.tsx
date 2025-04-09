@@ -9,7 +9,7 @@ import Sider from 'antd/es/layout/Sider';
 import styles from './mainLayout.module.scss';
 import { useStore } from '@/app/store';
 import { MenuListNode } from '@/app/types';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { MenuItemType } from 'antd/es/menu/interface';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -20,6 +20,7 @@ interface MenuSiderProps {
 const MenuSider: FC<MenuSiderProps> = ({ menuList = [] }) => {
   const pathName = usePathname();
 
+  const defaultOpenKeysRef = useRef<string[]>([]);
   const [menus, setMenus] = useState<MenuItemType[]>([]);
 
   const buildItems: (list: MenuListNode[], parendId?: string) => MenuItemType[] = (list, parendId = '0') => list.map(sub => {
@@ -31,6 +32,10 @@ const MenuSider: FC<MenuSiderProps> = ({ menuList = [] }) => {
       key: isHasChild ? id : (sub.path ?? id),
       label: isHasChild ? sub.nameToShow : <Link href={sub.path ?? ''}>{sub.nameToShow}</Link>,
     };
+
+    if (sub.path === pathName) {
+      defaultOpenKeysRef.current = [parendId];
+    }
 
     if (isHasChild) {
       return {
@@ -48,11 +53,12 @@ const MenuSider: FC<MenuSiderProps> = ({ menuList = [] }) => {
     }
   }, [menuList]);
 
-  return <Menu
+  return !!menus.length && <Menu
     style={{ width: '100%' }}
-    mode="vertical"
+    mode="inline"
     theme="light"
     selectedKeys={[pathName]}
+    defaultOpenKeys={defaultOpenKeysRef.current}
     items={menus}
   />;
 };
@@ -62,9 +68,40 @@ const SiderLayout = () => {
 
   const menus = useStore(state => state.menus);
 
+  const menuList = useMemo<MenuListNode[]>(() => {
+    const map = new Map<number, MenuListNode>();
+    const list: MenuListNode[] = [];
+    
+    menus.forEach(menu => {
+      const { id } = menu;
+      if (id) {
+        map.set(id, menu);
+        menu.children = [];
+      }
+    });
+
+    menus.forEach(menu => {
+      const { id, parentID } = menu;
+      if (parentID) {
+
+        if (id) {
+          const parent = map.get(parentID);
+          if (parent) {
+            parent?.children?.push?.(menu);
+          } else {
+            list.push(menu);    
+          }
+        }
+      } else {
+        list.push(menu);
+      }
+    });
+    return list;
+  }, [menus]);
+
   return (
     <Sider width="200" className={classNames((isDesigner || isNodeSider) ? styles.hiden : '')}>
-      <MenuSider menuList={menus} />
+      <MenuSider menuList={menuList} />
     </Sider>
   );
 };

@@ -11,9 +11,9 @@ import { useRef, useState } from 'react';
 import { AuthTreeRef } from '../components/AuthTree/types';
 import PermissionForm from './forms/PermissionForm';
 import { ModuleListNode } from '../types/auth';
-import { Permission } from '../types/entity';
+import { Permission, SysModule } from '../types/entity';
 import { isNil } from 'lodash';
-import { delPermissionApi } from '../api/auth';
+import { deleteModuleApi, delPermissionApi } from '../api/auth';
 import ModuleForm from './forms/ModuleForm';
 
 function AuthPage() {
@@ -65,6 +65,24 @@ function AuthPage() {
     }
     setModuleVisible(true);
   };
+  const delModule = (sysModule: SysModule) => {
+    modal.confirm({
+      title: '删除模块',
+      icon: <DeleteFilled />,
+      content: `确认删除模块【${sysModule.nameToShow}】？`,
+      okType: 'danger',
+      cancelText: '取消',
+      okText: '确认',
+      onOk: async () => {
+        const { id } = sysModule;
+        if (!isNil(id)) {
+          await deleteModuleApi(id);
+          authTreeRef.current?.refresh?.();
+          message.success(`删除模块【${sysModule.nameToShow}】成功！`);
+        }
+      },
+    });
+  }
 
   return (
     <>
@@ -80,6 +98,7 @@ function AuthPage() {
 
           onAddModule={(module) => openModuleForm(module, false)}
           onEditModule={(module) => openModuleForm(module, true)}
+          onDelModule={delModule}
         >
           <Button
             size="small"

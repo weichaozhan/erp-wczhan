@@ -157,7 +157,12 @@ const AuthTree: FC<AuthTreeProps> = ({
         if (!parentID) {
           tree.push(auth);
         } else {
-          map.get(parentID)?.children?.push(auth);
+          const parent = map.get(parentID);
+          if (parent) {
+            parent?.children?.push(auth);
+          } else {
+            tree.push(auth);
+          }
         }
       });
       setTreeData(tree);
