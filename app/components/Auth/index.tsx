@@ -6,6 +6,7 @@ import { App } from 'antd';
 import { useRouter, usePathname } from 'next/navigation';
 import { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import { once } from 'lodash';
+import { isBrowserEnv } from '@/app/global/tools';
 
 
 const Auth: FC = () => {
@@ -13,7 +14,7 @@ const Auth: FC = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const isBrowser  = typeof window !== 'undefined';
+  const isBrowser  = isBrowserEnv();
 
   const prePathNameRef = useRef<string | undefined>(undefined);
   const isAfterGetManuRef = useRef(false);

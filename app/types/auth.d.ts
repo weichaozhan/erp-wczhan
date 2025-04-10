@@ -1,6 +1,6 @@
 import { TreeDataNode } from 'antd';
 import { MODULE_TYPE_MAP } from '../global/constants';
-import { Permission, SysModule } from './entity';
+import { Permission, Role, SysModule } from './entity';
 
 export type GetAuthListApiData = SysModule[];
 
@@ -24,4 +24,23 @@ export interface CreateSysModule {
   isMenu: boolean;
   parentID?: number;
   path?: string;
+}
+
+export interface CreateRoleDto {
+  name: string;
+  nameToShow: string;
+  description?: string;
+  sysModules: SysModule[];
+  permissions: Permission[];
+}
+export interface GetRolesReturn {
+  roles?: Role[];
+  total?: number;
+  page?: number;
+  size?: number;
+}
+
+export interface PaginationDto {
+  page: number;
+  size: number;
 }

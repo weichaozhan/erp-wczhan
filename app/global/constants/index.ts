@@ -16,7 +16,10 @@ export const COMMON_PATHS = [
   FORBIDDEN_PAGE,
 ];
 
-// module
+// role id
+export const ROLE_ADMIN_ID = 1;
+
+// module id
 export const ROOT_MODULE_ID = 1;
 export const AUTH_MODULE_ID = 2;
 
@@ -40,3 +43,7 @@ export const MODULE_TYPE_MAP = {
     color: 'orange',
   },
 };
+
+// table
+export const DEFAULT_PAGE_SIZE = 10;
+export const DEFAULT_CURRENT = 1;

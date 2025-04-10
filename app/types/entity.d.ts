@@ -27,3 +27,16 @@ export interface SysModule {
   updateTime?: Date;
   permissions?: Permission[];
 }
+
+export class Role {
+  id?: number;
+  name?: string;
+  nameToShow?: string;
+  description?: string;
+  createTime?: Date;
+  updateTime?: Date;
+  createBy?: string;
+  creatorId?: number;
+  sysModules?: SysModule[];
+  permissions?: Permission[];
+}

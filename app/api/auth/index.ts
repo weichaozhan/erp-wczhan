@@ -1,6 +1,13 @@
 import { fetchFunc } from '@/app/global/fetch';
-import { CreatePermission, CreateSysModule, GetAuthListApiData } from '@/app/types/auth';
-import { Permission, SysModule } from '@/app/types/entity';
+import {
+  CreatePermission,
+  CreateRoleDto,
+  CreateSysModule,
+  GetAuthListApiData,
+  GetRolesReturn,
+  PaginationDto,
+} from '@/app/types/auth';
+import { Permission, Role, SysModule } from '@/app/types/entity';
 
 export const getAuthListApi = () => {
   return fetchFunc<GetAuthListApiData>({
@@ -12,6 +19,7 @@ export const getAuthListApi = () => {
     });
 };
 
+// permission
 export const createPermissionApi = (body: CreatePermission) => {
   return fetchFunc<Permission>({
     method: 'post',
@@ -22,7 +30,6 @@ export const createPermissionApi = (body: CreatePermission) => {
       return data;
     });
 };
-
 export const delPermissionApi = (id: Permission['id']) => {
   return fetchFunc({
     method: 'delete',
@@ -33,6 +40,7 @@ export const delPermissionApi = (id: Permission['id']) => {
     });
 };
 
+// module
 export const createModuleApi = (body: CreateSysModule) => {
   return fetchFunc<Permission>({
     method: 'post',
@@ -43,7 +51,6 @@ export const createModuleApi = (body: CreateSysModule) => {
       return data;
     });
 };
-
 export const updateModuleApi = (id: SysModule['id'], body: CreateSysModule) => {
   return fetchFunc<Permission>({
     method: 'put',
@@ -54,11 +61,51 @@ export const updateModuleApi = (id: SysModule['id'], body: CreateSysModule) => {
       return data;
     });
 };
-
 export const deleteModuleApi = (id: SysModule['id']) => {
   return fetchFunc<Permission>({
     method: 'delete',
     path: `/sysmodule/${id}`,
+  })
+    .then(data => {
+      return data;
+    });
+};
+
+// role
+export const getRolesApi = (body: PaginationDto) => {
+  return fetchFunc<GetRolesReturn>({
+    method: 'get',
+    path: '/role',
+    data: body,
+  })
+    .then(data => {
+      return data;
+    });
+};
+export const createRoleApi = (body: CreateRoleDto) => {
+  return fetchFunc<Role>({
+    method: 'post',
+    path: '/role',
+    data: body,
+  })
+    .then(data => {
+      return data;
+    });
+};
+export const updateRoleApi = (id: Role['id'], body: CreateRoleDto) => {
+  return fetchFunc<Role>({
+    method: 'put',
+    path: `/role/${id}`,
+    data: body,
+  })
+    .then(data => {
+      return data;
+    });
+};
+export const delRoleApi = (id: Role['id']) => {
+  return fetchFunc<Role>({
+    method: 'delete',
+    path: `/role/${id}`,
   })
     .then(data => {
       return data;
