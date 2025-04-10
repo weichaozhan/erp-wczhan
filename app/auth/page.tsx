@@ -1,6 +1,6 @@
 "use client"
 import classNames from 'classnames';
-import { DeleteFilled } from '@ant-design/icons';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 import globalStyles from '../global.module.scss';
 import styles from './styles/authPage.module.scss';
@@ -38,7 +38,7 @@ function AuthPage() {
   const delPermission = (permission: Permission) => {
     modal.confirm({
       title: '删除权限',
-      icon: <DeleteFilled />,
+      icon: <ExclamationCircleOutlined className={styles['danger-color']} />,
       content: `确认删除权限【${permission.nameDesc}】？`,
       okType: 'danger',
       cancelText: '取消',
@@ -68,7 +68,7 @@ function AuthPage() {
   const delModule = (sysModule: SysModule) => {
     modal.confirm({
       title: '删除模块',
-      icon: <DeleteFilled />,
+      icon: <ExclamationCircleOutlined className={styles['danger-color']} />,
       content: `确认删除模块【${sysModule.nameToShow}】？`,
       okType: 'danger',
       cancelText: '取消',

@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useImperativeHandle, useState } from
 import { once } from 'lodash';
 import { Button, Spin, Tag, Tooltip, Tree } from 'antd';
 
-import { MODULE_TYPE_MAP, ROOT_MODULE_ID } from '../../global/constants';
+import { AUTH_MODULE_ID, MODULE_TYPE_MAP, ROOT_MODULE_ID } from '../../global/constants';
 import { getAuthListApi } from '../../api/auth';
 import { ModuleListNode } from '../../types/auth';
 import { AuthTreeRef } from './types';
@@ -96,7 +96,7 @@ const AuthTree: FC<AuthTreeProps> = ({
                     </Button>
                   </Tooltip>
     
-                  <Tooltip title={`删除${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
+                  {id !== AUTH_MODULE_ID && <Tooltip title={`删除${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
                     <Button
                       onClick={() => onDelModule?.(authTemp)}
                       className={styles['option-btn']}
@@ -104,9 +104,9 @@ const AuthTree: FC<AuthTreeProps> = ({
                       shape="circle"
                       size="small"
                     >
-                      <Iconfont classes={[styles['module-icon']]} xlinkHref="#icon-jian2" />
+                      <Iconfont classes={[styles['danger-icon']]} xlinkHref="#icon-jian2" />
                     </Button>
-                  </Tooltip>
+                  </Tooltip>}
                 </>
               ): <></>}
     

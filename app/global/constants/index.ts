@@ -16,7 +16,9 @@ export const COMMON_PATHS = [
   FORBIDDEN_PAGE,
 ];
 
+// module
 export const ROOT_MODULE_ID = 1;
+export const AUTH_MODULE_ID = 2;
 
 export const AUTHORIZATION = 'Authorization';
 
