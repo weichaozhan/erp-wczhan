@@ -26,7 +26,7 @@ const FormItem = Form.Item;
 
 const PREFIX_MODULE = 'module-';
 
-const getModuleTreeVal = (isModule: boolean, id: number, parentId?: number) => `${isModule ? PREFIX_MODULE : ''}${id}${parentId ? `-${parentId}` : ''}`;
+const getModuleTreeVal = (isModule: boolean, id: number) => `${isModule ? PREFIX_MODULE : ''}${id}`;
 
 const RoleForm: FC<FormProps> = ({
   isEdit = false,
@@ -60,7 +60,7 @@ const RoleForm: FC<FormProps> = ({
           treeMapRef.current.set(id, { id, parentID: auth.parentID });
   
           authTemp.children = [];
-          authTemp.value = getModuleTreeVal(true, id, auth.parentID);
+          authTemp.value = getModuleTreeVal(true, id);
           authTemp.title = <div>
             <Tag color={MODULE_TYPE_MAP.module.color}>
               {MODULE_TYPE_MAP.module.name}
@@ -76,7 +76,7 @@ const RoleForm: FC<FormProps> = ({
           authTemp.permissions?.forEach((permission) => {
             authTemp.children?.push({
               ...permission,
-              value: getModuleTreeVal(false, permission.id ?? 0, permission.parentID),
+              value: getModuleTreeVal(false, permission.id ?? 0),
               title: <div>
               <Tag color={MODULE_TYPE_MAP.permission.color}>
                 {MODULE_TYPE_MAP.permission.name}
@@ -149,44 +149,29 @@ const RoleForm: FC<FormProps> = ({
         const values: RoleFormVal = form.getFieldsValue();
         const { tree } = values;
 
-        const sysSet = new Set<number>();
-        const permissionSet = new Set<number>();
+        const sysModules: SysModule[] = [];
+        const permissions: Permission[] = [];
 
         tree.forEach(item => {
           const isModule = /^module-/.test(item);
 
-          const [id, parentID] = item.replace(PREFIX_MODULE, '').split('-').map(id => +id);
+          const [id] = item.replace(PREFIX_MODULE, '').split('-').map(id => +id);
 
           if (isModule) {
-            sysSet.add(id);
+            sysModules.push({ id });
           } else {
-            permissionSet.add(id);
+            permissions.push({ id });
           }
-
-          const getParents = (parentID?: number) => {
-            if (parentID) {
-              const parent = treeMapRef.current.get(parentID);
-              const { id, parentID: grandPid } = parent ?? {};
-
-              if (id) {
-                sysSet.add(id);
-                if (grandPid) {
-                  getParents(grandPid);
-                }
-              }
-            }
-          };
-          getParents(parentID);
         });
 
-        const sysModules: SysModule[] = [];
-        const permissions: Permission[] = [];
-
-        sysSet.forEach(id => sysModules.push({ id }));
-        permissionSet.forEach(id => permissions.push({ id }));
-
         console.log('values', values, 'sysModules, permissions', sysModules, permissions);
-        // sendRequest(values);
+        sendRequest({
+          name: values.name,
+          nameToShow: values.nameToShow,
+          description: values.description,
+          sysModules,
+          permissions,
+        });
       });
   };
 
@@ -196,18 +181,21 @@ const RoleForm: FC<FormProps> = ({
       const pids: string[] = []
 
       roleData?.permissions?.forEach(p => p.id && pids.push(
-        getModuleTreeVal(false, p.id, p.parentID),
+        getModuleTreeVal(false, p.id),
       ));
       roleData?.sysModules?.forEach(s => !s.parentID && s.id && leafModules.push(
-        getModuleTreeVal(true, s.id, s.parentID),
+        getModuleTreeVal(true, s.id),
       ));
 
-      form.setFieldsValue({
+      const formVal = {
         name: roleData?.name,
         nameToShow: roleData?.nameToShow,
         description: roleData?.description,
         tree: [...leafModules, ...pids],
-      });
+      };
+
+      console.log('formVal', formVal, 'roleData', roleData);
+      form.setFieldsValue(formVal);
     }
   }, [isOpen, isEdit]);
   useEffect(() => {

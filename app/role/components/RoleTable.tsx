@@ -1,6 +1,6 @@
 "use client"
 
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useImperativeHandle, useState } from 'react';
 import { App, Button, Popconfirm, Table, TablePaginationConfig } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
@@ -9,8 +9,10 @@ import { Role } from '@/app/types/entity';
 import { DEFAULT_CURRENT, DEFAULT_PAGE_SIZE, ROLE_ADMIN_ID } from '@/app/global/constants';
 import { getRolesApi } from '@/app/api/auth';
 import dayjs from 'dayjs';
+import { RoleTableRef } from '@/app/components/AuthTree/types';
 
 interface RoleTableProps {
+  tableRef: React.Ref<RoleTableRef>;
   onDel?: (role: Role) => void;
   onEdit?: (role: Role) => void;
 }
@@ -18,6 +20,7 @@ interface RoleTableProps {
 const { Column } = Table;
 
 const RoleTable: FC<RoleTableProps> = ({
+  tableRef,
   onDel,
   onEdit,
 }) => {
@@ -57,6 +60,10 @@ const RoleTable: FC<RoleTableProps> = ({
       setLoading(false);
     }
   };
+
+  useImperativeHandle(tableRef, () => ({
+    refresh: getRolelist,
+  }), [pagination]);
 
   useEffect(() => {
     if (isBrowserEnv()) {

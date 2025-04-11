@@ -1,7 +1,7 @@
 "use client"
 
 import classNames from 'classnames';
-import { FC, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 
 import globalStyles from '../global.module.scss';
 
@@ -9,9 +9,12 @@ import RoleTable from './components/RoleTable';
 import { Button, Divider } from 'antd';
 import RoleForm from './components/forms/RoleForm';
 import { Role } from '../types/entity';
+import { RoleTableRef } from '../components/AuthTree/types';
 
 const RolePage: FC = () => {
-  const [isEdit, seIsEdit] = useState(false);
+  const tableRef = useRef<RoleTableRef | null>();
+
+  const [isEdit, setIsEdit] = useState(false);
   const [roleVisible, setRoleVisible] = useState(false);
 
   const [roleData, setRoleData] = useState<Role>();
@@ -24,17 +27,18 @@ const RolePage: FC = () => {
         type="primary"
         onClick={() => {
           setRoleVisible(true);
-          seIsEdit(false);
+          setIsEdit(false);
         }}
       >添加角色</Button>
 
       <Divider />
 
       <RoleTable
+        tableRef={ref => { tableRef.current = ref }}
         onEdit={(role) => {
           setRoleVisible(true);
           setRoleData(role);
-          seIsEdit(true);
+          setIsEdit(true);
         }}
       />
     </div>
@@ -43,9 +47,13 @@ const RolePage: FC = () => {
       roleData={roleData}
       isOpen={roleVisible}
       isEdit={isEdit}
+      onOkSuccess={() => {
+        tableRef.current?.refresh();
+      }}
       closeModal={() => {
         setRoleVisible(false);
         setRoleData(undefined);
+        setIsEdit(false);
       }}
     />
   </>;
