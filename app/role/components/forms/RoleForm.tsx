@@ -7,13 +7,13 @@ import { isBrowserEnv } from '@/app/global/tools';
 import { CreateRoleDto, ModuleListNode } from '@/app/types/auth';
 import { createRoleApi, getAuthListApi, updateRoleApi } from '@/app/api/auth';
 import { MODULE_TYPE_MAP } from '@/app/global/constants';
-import { Permission, SysModule } from '@/app/types/entity';
+import { Permission, Role, SysModule } from '@/app/types/entity';
 
 type RoleFormVal = Omit<CreateRoleDto, 'sysModules' | 'permissions'> & { tree: string[] };
 
 interface FormProps {
   isEdit?: boolean;
-  roleData?: ModuleListNode;
+  roleData?: Role;
   isOpen?: boolean;
   closeModal?: () => void;
   onOkSuccess?: () => void;
@@ -25,6 +25,8 @@ type SimpleTreeNode = Pick<ModuleListNode, 'id' | 'parentID'>;
 const FormItem = Form.Item;
 
 const PREFIX_MODULE = 'module-';
+
+const getModuleTreeVal = (isModule: boolean, id: number, parentId?: number) => `${isModule ? PREFIX_MODULE : ''}${id}${parentId ? `-${parentId}` : ''}`;
 
 const RoleForm: FC<FormProps> = ({
   isEdit = false,
@@ -58,7 +60,7 @@ const RoleForm: FC<FormProps> = ({
           treeMapRef.current.set(id, { id, parentID: auth.parentID });
   
           authTemp.children = [];
-          authTemp.value = `${PREFIX_MODULE}${id}${auth.parentID ? `-${auth.parentID}` : ''}`;
+          authTemp.value = getModuleTreeVal(true, id, auth.parentID);
           authTemp.title = <div>
             <Tag color={MODULE_TYPE_MAP.module.color}>
               {MODULE_TYPE_MAP.module.name}
@@ -74,7 +76,7 @@ const RoleForm: FC<FormProps> = ({
           authTemp.permissions?.forEach((permission) => {
             authTemp.children?.push({
               ...permission,
-              value: `${permission.id}${permission.parentID ? `-${permission.parentID}` : ''}`,
+              value: getModuleTreeVal(false, permission.id ?? 0, permission.parentID),
               title: <div>
               <Tag color={MODULE_TYPE_MAP.permission.color}>
                 {MODULE_TYPE_MAP.permission.name}
@@ -190,9 +192,21 @@ const RoleForm: FC<FormProps> = ({
 
   useEffect(() => {
     if (isOpen && isEdit) {
+      const leafModules: string[] = [];
+      const pids: string[] = []
+
+      roleData?.permissions?.forEach(p => p.id && pids.push(
+        getModuleTreeVal(false, p.id, p.parentID),
+      ));
+      roleData?.sysModules?.forEach(s => !s.parentID && s.id && leafModules.push(
+        getModuleTreeVal(true, s.id, s.parentID),
+      ));
+
       form.setFieldsValue({
         name: roleData?.name,
         nameToShow: roleData?.nameToShow,
+        description: roleData?.description,
+        tree: [...leafModules, ...pids],
       });
     }
   }, [isOpen, isEdit]);
@@ -250,9 +264,6 @@ const RoleForm: FC<FormProps> = ({
       <FormItem
         name="description"
         label="描述"
-        rules={[
-          { required: true, message: '角色描述不能为空' },
-        ]}
       >
         <Input placeholder='请输入角色描述' suppressHydrationWarning />
       </FormItem>
