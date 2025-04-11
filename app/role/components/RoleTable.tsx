@@ -1,7 +1,8 @@
 "use client"
 
 import { FC, useEffect, useState } from 'react';
-import { App, Button, Table, TablePaginationConfig } from 'antd';
+import { App, Button, Popconfirm, Table, TablePaginationConfig } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import { isBrowserEnv } from '@/app/global/tools';
 import { Role } from '@/app/types/entity';
@@ -9,9 +10,17 @@ import { DEFAULT_CURRENT, DEFAULT_PAGE_SIZE, ROLE_ADMIN_ID } from '@/app/global/
 import { getRolesApi } from '@/app/api/auth';
 import dayjs from 'dayjs';
 
+interface RoleTableProps {
+  onDel?: (role: Role) => void;
+  onEdit?: (role: Role) => void;
+}
+
 const { Column } = Table;
 
-const RoleTable: FC = () => {
+const RoleTable: FC<RoleTableProps> = ({
+  onDel,
+  onEdit,
+}) => {
   const { message } = App.useApp();
 
   const [loading, setLoading] = useState(false);
@@ -68,6 +77,10 @@ const RoleTable: FC = () => {
       onChange: onChangePagination,
     }}
     loading={loading}
+    size="small"
+    expandable={{
+      rowExpandable: (record) => !!record.sysModules?.length || !!record.permissions?.length,
+    }}
   >
     <Column title="ID" dataIndex="id" />
     <Column title="名称" dataIndex="name" />
@@ -81,10 +94,29 @@ const RoleTable: FC = () => {
       dataIndex="client-options"
       render={(...rest) => {
         const record: Role = rest[1];
-        console.log('rec', record);
-        return record.id !== ROLE_ADMIN_ID && <>
-          <Button type="primary" size="small">修改</Button>
-          <Button className="ml-10px" type="primary" size="small" danger>删除</Button>
+        
+        return <>
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => onEdit?.(record)}
+          >修改</Button>
+
+          <Popconfirm
+            title="注意"
+            description={`确认删除角色【${record.nameToShow}】？`}
+            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+            okButtonProps={{ danger: true, size: 'small' }}
+            cancelButtonProps={{ size: 'small' }}
+            onConfirm={() => onDel?.(record)}
+          >
+            <Button
+              danger
+              className="ml-10px"
+              type="primary"
+              size="small"
+            >删除</Button>
+          </Popconfirm>
         </>;
       }}
     />

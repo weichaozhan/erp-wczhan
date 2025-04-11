@@ -54,6 +54,7 @@ const MenuSider: FC<MenuSiderProps> = ({ menuList = [] }) => {
   }, [menuList]);
 
   return !!menus.length && <Menu
+    className="border-e-0"
     style={{ width: '100%' }}
     mode="inline"
     theme="light"
@@ -100,7 +101,7 @@ const SiderLayout = () => {
   }, [menus]);
 
   return (
-    <Sider width="200" className={classNames((isDesigner || isNodeSider) ? styles.hiden : '')}>
+    <Sider width="200" className={classNames('shadow overflow-scroll bg-white', (isDesigner || isNodeSider) ? styles.hiden : '')}>
       <MenuSider menuList={menuList} />
     </Sider>
   );

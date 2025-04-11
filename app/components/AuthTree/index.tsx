@@ -11,8 +11,9 @@ import { AuthTreeRef } from './types';
 import Iconfont from '../iconfont';
 
 import styles from './styles/authTree.module.scss';
+import { TreeProps } from 'antd/lib';
 
-interface AuthTreeProps {
+interface AuthTreeProps extends TreeProps<ModuleListNode> {
   authTreeRef?: React.Ref<AuthTreeRef>;
   checkable?: boolean;
   actionable?: boolean;
@@ -36,6 +37,7 @@ const AuthTree: FC<AuthTreeProps> = ({
   onDelModule,
   onDelPermission,
   onEditModule,
+  ...rest
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -195,6 +197,7 @@ const AuthTree: FC<AuthTreeProps> = ({
         treeData={treeData}
         checkable={checkable}
         defaultExpandAll={defaultExpandAll}
+        {...rest}
       />}
     </div>
   )

@@ -1,22 +1,33 @@
+"use client"
+
 import classNames from 'classnames';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 
 import globalStyles from '../global.module.scss';
-import styles from './styles/rolePage.module.scss';
 
 import RoleTable from './components/RoleTable';
 import { Button, Divider } from 'antd';
+import RoleForm from './components/forms/RoleForm';
 
 const RolePage: FC = () => {
-  return <div
-    className={classNames(globalStyles['content-wrapper'], styles['role-content-wrapper'])}
-  >
-    <Button type="primary">添加角色</Button>
+  const [roleVisible, setRoleVisible] = useState(false);
 
-    <Divider />
+  return <>
+    <div
+      className={classNames('h-full overflow-scroll', globalStyles['content-wrapper'])}
+    >
+      <Button
+        type="primary"
+        onClick={() => setRoleVisible(true)}
+      >添加角色</Button>
 
-    <RoleTable />
-  </div>;
+      <Divider />
+
+      <RoleTable />
+    </div>
+
+    <RoleForm isOpen={roleVisible} />
+  </>;
 };
 
 export default RolePage;
