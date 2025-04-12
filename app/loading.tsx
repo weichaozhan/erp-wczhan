@@ -10,6 +10,7 @@ export default function Loading() {
       }}
     >
       <Spin
+        spinning={true}
         size="large"
         style={{
           position: 'absolute',

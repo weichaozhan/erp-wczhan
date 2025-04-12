@@ -1,3 +1,16 @@
+export interface User {
+  id: number;
+  email?: string;
+  userId?: string;
+  username?: string;
+  frozen?: boolean;
+  createDate?: Date;
+  updateDate?: Date;
+  createBy?: string;
+  creatorId?: number;
+  roles?: Role[];
+}
+
 export interface Permission {
   id?: number;
   name?: string;

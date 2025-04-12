@@ -11,6 +11,16 @@ export type ModuleListNode = Partial<TreeDataNode> & SysModule & Permission & {
   children?: ModuleListNode[];
 };
 
+export interface ListProps {
+  size?: number;
+  total?: number;
+  page?: number;
+}
+
+export interface GetUsersReturn extends ListProps {
+  users?: User[];
+}
+
 export interface CreatePermission {
   name: string;
   nameDesc: string;
@@ -33,11 +43,8 @@ export interface CreateRoleDto {
   sysModules: SysModule[];
   permissions: Permission[];
 }
-export interface GetRolesReturn {
+export interface GetRolesReturn extends ListProps {
   roles?: Role[];
-  total?: number;
-  page?: number;
-  size?: number;
 }
 
 export interface PaginationDto {

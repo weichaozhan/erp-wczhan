@@ -1,12 +1,8 @@
 import { fetchFunc } from '@/app/global/fetch';
+import { GetUsersReturn, PaginationDto } from '@/app/types/auth';
 
-interface GetUsersApi {
-  page: number;
-  size: number;
-}
-
-export const getUsersApi = (body: GetUsersApi) => {
-  return fetchFunc({
+export const getUsersApi = (body: PaginationDto) => {
+  return fetchFunc<GetUsersReturn>({
     method: 'get',
     data: body,
     path: '/user',
