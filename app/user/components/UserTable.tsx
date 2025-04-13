@@ -1,32 +1,50 @@
 "use client"
 
-import { FC } from 'react';
-import { Button, Popconfirm, Table } from 'antd';
-import { QuestionCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { FC, useRef } from 'react';
+import { App, Button, Popconfirm, Table } from 'antd';
+import { QuestionCircleOutlined, CheckOutlined, EditOutlined, CloseOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 import { User } from '@/app/types/entity';
 import { GetUsersReturn } from '@/app/types/auth';
-import { getUsersApi } from '@/app/api/user';
+import { getUsersApi, updateUsersApi } from '@/app/api/user';
 import TableHOC from '../../global/hoc/TableHOC';
 import { RoleTableRef } from '@/app/components/AuthTree/types';
 
 const { Column } = Table;
 
-interface OwnProps {
-  tableRef?: React.Ref<RoleTableRef>;
-  onDel?: (user: User) => void;
-}
+interface OwnProps {}
 
-const UserTable: FC<OwnProps> = ({
-  tableRef,
-}) => {
+const UserTable: FC<OwnProps> = () => {
+  const { message } = App.useApp();
+
+  const tableRef = useRef<RoleTableRef | null>(null);
+
+  const updateUser = async (user: User, frozen: boolean = false) => {
+    const { username, email } = user;
+    if (username && email) {
+      try {
+        await updateUsersApi(user.id, {
+          username,
+          email,
+          frozen,
+        });
+        tableRef.current?.refresh();
+        message.success(`用户【${username}】${frozen ? '冻结' : '解冻'}成功`);
+      } catch (e) {
+        message.error(Object.toString.call(e));
+      }
+    }
+  };
+
   return <TableHOC<
     OwnProps,
     User,
     GetUsersReturn
   >
-    tableRef={tableRef}
+    tableRef={ref => {
+      tableRef.current = ref;
+    }}
     WrappedComponent={({
       listData,
       pagination,
@@ -70,35 +88,39 @@ const UserTable: FC<OwnProps> = ({
         <Column
           title="操作"
           key="actions" 
-          render={(_, record) => (
-            <>
-              <Button
-                type="primary"
-                size="small"
-                title="分配角色"
-              >
-                <EditOutlined />
-              </Button>
-
-              <Popconfirm
-                title="注意"
-                description={`确认删用户【${record.username}】？`}
-                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                okButtonProps={{ danger: true, size: 'small' }}
-                cancelButtonProps={{ size: 'small' }}
-              >
+          render={(_, record: User) => {
+            const txtFrozen = record.frozen ? '解冻' : '冻结';
+            return (
+              <>
                 <Button
-                  danger
-                  className="ml-10px"
                   type="primary"
                   size="small"
-                  title="删除"
+                  title="分配角色"
                 >
-                  <DeleteOutlined />
+                  <EditOutlined />
                 </Button>
-              </Popconfirm>
-            </>
-          )}
+  
+                <Popconfirm
+                  title="注意"
+                  description={`确认${txtFrozen}用户【${record.username}】？`}
+                  icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                  okButtonProps={{ danger: true, size: 'small' }}
+                  cancelButtonProps={{ size: 'small' }}
+                  onConfirm={() => updateUser(record, !record.frozen)}
+                >
+                  <Button
+                    danger={!record.frozen}
+                    className="ml-10px"
+                    type="primary"
+                    size="small"
+                    title={txtFrozen}
+                  >
+                    {record.frozen ? <CheckOutlined /> : <CloseOutlined />}
+                  </Button>
+                </Popconfirm>
+              </>
+            );
+          }}
         />
       </Table>
     )}
