@@ -1,5 +1,6 @@
 import { fetchFunc } from '@/app/global/fetch';
 import { GetUsersReturn, PaginationDto } from '@/app/types/auth';
+import { Role } from '@/app/types/entity';
 
 export interface CreateUsersApi {
   username: string;
@@ -34,6 +35,7 @@ export const createUsersApi = (body: CreateUsersApi) => {
 
 type UpdateUsersApi = Pick<CreateUsersApi, 'username' | 'email'> & {
   frozen?: boolean;
+  roles?: Role[];
 }
 export const updateUsersApi = (id: number, body: UpdateUsersApi) => {
   return fetchFunc({

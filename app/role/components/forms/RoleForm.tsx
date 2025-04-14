@@ -9,7 +9,7 @@ import { createRoleApi, getAuthListApi, updateRoleApi } from '@/app/api/auth';
 import { MODULE_TYPE_MAP } from '@/app/global/constants';
 import { Permission, Role, SysModule } from '@/app/types/entity';
 
-type RoleFormVal = Omit<CreateRoleDto, 'sysModules' | 'permissions'> & { tree: string[] };
+type RoleFormVal = Omit<CreateRoleDto, 'sysModules' | 'permissions'> & { tree?: string[] };
 
 interface FormProps {
   isEdit?: boolean;
@@ -152,7 +152,7 @@ const RoleForm: FC<FormProps> = ({
         const sysModules: SysModule[] = [];
         const permissions: Permission[] = [];
 
-        tree.forEach(item => {
+        tree?.forEach(item => {
           const isModule = /^module-/.test(item);
 
           const [id] = item.replace(PREFIX_MODULE, '').split('-').map(id => +id);
