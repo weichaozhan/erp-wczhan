@@ -11,6 +11,7 @@ import { getUsersApi, updateUsersApi } from '@/app/api/user';
 import TableHOC from '../../global/hoc/TableHOC';
 import { RoleTableRef } from '@/app/components/AuthTree/types';
 import RoleSetForm from './RoleSetForm';
+import { USER_FIRST_ID } from '@/app/global/constants';
 
 const { Column } = Table;
 
@@ -97,7 +98,7 @@ const UserTable: FC<OwnProps> = () => {
             key="actions" 
             render={(_, record: User) => {
               const txtFrozen = record.frozen ? '解冻' : '冻结';
-              return (
+              return record.id === USER_FIRST_ID ? <></> : (
                 <>
                   <Button
                     type="primary"

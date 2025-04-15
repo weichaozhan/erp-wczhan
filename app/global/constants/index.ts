@@ -16,6 +16,8 @@ export const COMMON_PATHS = [
   FORBIDDEN_PAGE,
 ];
 
+// first system user id
+export const USER_FIRST_ID = 1;
 // role id
 export const ROLE_ADMIN_ID = 1;
 
