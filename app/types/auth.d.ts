@@ -50,4 +50,6 @@ export interface GetRolesReturn extends ListProps {
 export interface PaginationDto {
   page: number;
   size: number;
+  searchKey?: string;
+  searchValue?: string;
 }
