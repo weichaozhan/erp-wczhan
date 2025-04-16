@@ -1,5 +1,5 @@
 "use client"
-import React, { FC, useCallback, useEffect, useImperativeHandle, useState } from 'react';
+import React, { FC, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { once } from 'lodash';
 import { Button, Spin, Tag, Tooltip, Tree } from 'antd';
 
@@ -12,6 +12,10 @@ import Iconfont from '../iconfont';
 
 import styles from './styles/authTree.module.scss';
 import { TreeProps } from 'antd/lib';
+import { User } from '@/app/types/entity';
+import { isBrowserEnv } from '@/app/global/tools';
+import { getLoginUserApi } from '@/app/api/user';
+import { flushSync } from 'react-dom';
 
 interface AuthTreeProps extends TreeProps<ModuleListNode> {
   authTreeRef?: React.Ref<AuthTreeRef>;
@@ -39,12 +43,33 @@ const AuthTree: FC<AuthTreeProps> = ({
   onEditModule,
   ...rest
 }) => {
+  // current logined user
+  const userDataRef = useRef<User>();
+
   const [loading, setLoading] = useState(false);
 
   const [treeData, setTreeData] = useState<ModuleListNode[] | undefined>(undefined);
 
+  const isHasActionAuth = useCallback((auth: ModuleListNode, isModule = false) => {
+    const isRootModule = isModule && auth.id === ROOT_MODULE_ID;
+    const isUserCreate = userDataRef.current && userDataRef.current.id === auth.creatorId;
+    
+    return !isRootModule && isUserCreate;
+  }, [userDataRef.current]);
+
+  const getUserData = useCallback(async () => {
+    try {
+      const userData = await getLoginUserApi();
+      userDataRef.current = userData;
+    } catch(err) {
+      console.error(err);
+    }
+  }, []);
+
   const getAuthList = async () => {
     setLoading(true);
+
+    await getUserData();
 
     try {
       const data = await getAuthListApi();
@@ -72,7 +97,7 @@ const AuthTree: FC<AuthTreeProps> = ({
 
             {authTemp.nameToShow}
             {actionable && <>
-              {id !== ROOT_MODULE_ID ? (
+              {isHasActionAuth(authTemp, true) ? (
                 <>
                   <Tooltip title={`修改${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
                     <Button
@@ -138,7 +163,7 @@ const AuthTree: FC<AuthTreeProps> = ({
               
               {permission.nameDesc}
   
-              {actionable && <Tooltip title={'删除权限'}>
+              {actionable && isHasActionAuth(permission) && <Tooltip title={'删除权限'}>
                 <Button
                   className={styles['option-btn']}
                   onClick={() => onDelPermission?.(permission)}
@@ -174,15 +199,20 @@ const AuthTree: FC<AuthTreeProps> = ({
 
     setLoading(false);
   };
+  const getAuthListMounted = useCallback(getAuthList, [userDataRef.current]);
 
-  const getAuthListMounted = useCallback(once(getAuthList), []);
+  const init = useCallback(once(async () => {
+    if (isBrowserEnv()) {
+      await getAuthListMounted();
+    }
+  }), [getAuthListMounted, getUserData, userDataRef.current]);
 
   useImperativeHandle(authTreeRef, () => ({
     refresh: getAuthList,
   }), []);
 
   useEffect(() => {
-    getAuthListMounted();
+    init();
   }, []);
 
   return (

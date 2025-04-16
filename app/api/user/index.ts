@@ -1,6 +1,6 @@
 import { fetchFunc } from '@/app/global/fetch';
 import { GetUsersReturn, PaginationDto } from '@/app/types/auth';
-import { Role } from '@/app/types/entity';
+import { Role, User } from '@/app/types/entity';
 
 export interface CreateUsersApi {
   username: string;
@@ -45,6 +45,16 @@ export const updateUsersApi = (id: number, body: UpdateUsersApi) => {
   })
     .then(data => {
       console.log(data);
+      return data;
+    });
+};
+
+export const getLoginUserApi = async () => {
+  return fetchFunc<User>({
+    method: 'get',
+    path: '/user/info',
+  })
+    .then(data => {
       return data;
     });
 };
