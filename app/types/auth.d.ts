@@ -47,6 +47,10 @@ export interface GetRolesReturn extends ListProps {
   roles?: Role[];
 }
 
+export interface GetGroupsReturn extends ListProps {
+  groups?: User[];
+}
+
 export interface PaginationDto {
   page: number;
   size: number;

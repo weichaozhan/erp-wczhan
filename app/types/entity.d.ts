@@ -53,3 +53,15 @@ export class Role {
   sysModules?: SysModule[];
   permissions?: Permission[];
 }
+
+export class Group {
+  id: number;
+  name: string;
+  description: string;
+  createTime: Date;
+  updateTime: Date;
+  createBy: string;
+  creatorId: number;
+  users: User[];
+}
+
