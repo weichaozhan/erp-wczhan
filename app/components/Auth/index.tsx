@@ -4,7 +4,7 @@ import { AUTHORIZATION, COMMON_PATHS } from '@/app/global/constants';
 import { useStore } from '@/app/store';
 import { App } from 'antd';
 import { useRouter, usePathname } from 'next/navigation';
-import { FC, useCallback, useEffect, useMemo, useRef } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { once } from 'lodash';
 import { isBrowserEnv } from '@/app/global/tools';
 
@@ -17,9 +17,10 @@ const Auth: FC = () => {
   const isBrowser  = isBrowserEnv();
 
   const prePathNameRef = useRef<string | undefined>(undefined);
-  const isAfterGetManuRef = useRef(false);
 
   const { setIsLogin, isLogin, setMenus, menus } = useStore(state => state);
+
+  const [isAfterGetManu, setIsAfterGetManu] = useState(false);
 
   const userPaths = useMemo(() => {
     const paths = [...COMMON_PATHS];
@@ -34,30 +35,31 @@ const Auth: FC = () => {
 
   // get menu data, excute once
   const handleMenus = useCallback(once(() => {
-    if (isBrowser && isLogin && !isAfterGetManuRef.current) {
+    if (isBrowser && isLogin && !isAfterGetManu) {
       getMenusApi()
         .then(data => {
           console.log('getMenusApi', data);
           setMenus(data ?? []);
         })
         .finally(() => {
-          isAfterGetManuRef.current = true;
+          setIsAfterGetManu(true);
         });
     }
-  }), [isLogin, isAfterGetManuRef.current, isBrowser]);
+  }), [isLogin, isAfterGetManu, isBrowser]);
 
   useEffect(() => {
     handleMenus();
   }, [isLogin]);
 
   useEffect(() => {
-    if (isBrowser && isAfterGetManuRef.current) {
+    console.log('isBrowser && isAfterGetManuRef.current', isBrowser, isAfterGetManu)
+    if (isBrowser && isAfterGetManu) {
       console.log('userPaths', userPaths, 'pathname', pathname);
       if (!userPaths.includes(pathname)) {
         router.push('/forbidden');
       }
     }
-  }, [userPaths, pathname]);
+  }, [userPaths, pathname, isAfterGetManu]);
 
   useEffect(() => {
     const authStr = localStorage.getItem(AUTHORIZATION);
