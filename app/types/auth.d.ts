@@ -48,7 +48,7 @@ export interface GetRolesReturn extends ListProps {
 }
 
 export interface GetGroupsReturn extends ListProps {
-  groups?: User[];
+  groups?: number[];
 }
 
 export interface PaginationDto {

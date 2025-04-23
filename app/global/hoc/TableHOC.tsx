@@ -17,7 +17,6 @@ export interface CommonTableProps<T> {
 type PageParams = Pick<TablePaginationConfig, 'current' | 'pageSize'>;
 
 export default function TableHOC<
-  OwnProps,
   DataNode,
   ReturnData>({
     tableRef,

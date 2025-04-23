@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 
 import globalStyles from '../global.module.scss';
+import GroupTable from './GroupTable';
 
 function AuthPage() {
 
@@ -9,7 +10,7 @@ function AuthPage() {
       <div
         className={classNames('h-full overflow-scroll', globalStyles['content-wrapper'])}
       >
-        群组管理
+        <GroupTable />
       </div>
     </>
   )

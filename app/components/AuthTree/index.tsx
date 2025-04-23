@@ -97,6 +97,18 @@ const AuthTree: FC<AuthTreeProps> = ({
 
             {authTemp.nameToShow}
             {actionable && <>
+              <Tooltip title={`添加${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
+                <Button
+                  onClick={() => onAddModule?.(authTemp)}
+                  className={styles['option-btn']}
+                  type="text"
+                  shape="circle"
+                  size="small"
+                >
+                  <Iconfont classes={[styles['module-icon']]} xlinkHref="#icon-jia" />
+                </Button>
+              </Tooltip>
+              
               {isHasActionAuth(authTemp, true) ? (
                 <>
                   <Tooltip title={`修改${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
@@ -108,18 +120,6 @@ const AuthTree: FC<AuthTreeProps> = ({
                       size="small"
                     >
                       <Iconfont classes={[styles['module-icon']]} xlinkHref="#icon-edit" />
-                    </Button>
-                  </Tooltip>
-
-                  <Tooltip title={`添加${MODULE_TYPE_MAP[authTemp.nodetype].name}`}>
-                    <Button
-                      onClick={() => onAddModule?.(authTemp)}
-                      className={styles['option-btn']}
-                      type="text"
-                      shape="circle"
-                      size="small"
-                    >
-                      <Iconfont classes={[styles['module-icon']]} xlinkHref="#icon-jia" />
                     </Button>
                   </Tooltip>
     

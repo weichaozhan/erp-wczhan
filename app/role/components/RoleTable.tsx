@@ -25,7 +25,6 @@ const RoleTable: FC<RoleTableProps> = ({
   onEdit,
 }) => {
   return <TableHOC<
-    RoleTableProps,
     Role,
     GetRolesReturn
   >

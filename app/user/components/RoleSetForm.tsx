@@ -76,7 +76,7 @@ const RoleSetForm: FC<FormProps> = ({
   }, [isOpen]);
 
   return <Modal
-    title={`给用户【${userData?.username}】分配角色`}
+    title={`给用户【${userData?.username}】分配`}
     open={isOpen}
     // onOk={clickOk}
     maskClosable

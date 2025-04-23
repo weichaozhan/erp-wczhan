@@ -15,9 +15,7 @@ import { USER_FIRST_ID } from '@/app/global/constants';
 
 const { Column } = Table;
 
-interface OwnProps {}
-
-const UserTable: FC<OwnProps> = () => {
+const UserTable: FC = () => {
   const { message } = App.useApp();
 
   const tableRef = useRef<RoleTableRef | null>(null);
@@ -44,7 +42,6 @@ const UserTable: FC<OwnProps> = () => {
 
   return <>
     <TableHOC<
-      OwnProps,
       User,
       GetUsersReturn
     >
@@ -103,7 +100,7 @@ const UserTable: FC<OwnProps> = () => {
                   <Button
                     type="primary"
                     size="small"
-                    title="分配角色"
+                    title="分配"
                     onClick={() => {
                       setUserData(record);
                       setRoleSetVisible(true);
