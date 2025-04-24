@@ -8,6 +8,7 @@ import { Group, User } from '@/app/types/entity';
 import { App, Form, Input, Modal, Select } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { CreateGroupDto, createGroupsApi, updateGroupsApi } from '../api/group';
+import { SelectedIdLableMap } from '../types';
 
 interface FormProps {
   groupData?: Group;
@@ -31,14 +32,18 @@ const GroupForm: FC<FormProps> = ({
 
   const [form] = Form.useForm<CreateGroupDto>();
 
-  const [okLoading] = useState(false);
+  const [okLoading, setLoading] = useState(false);
+  const [userSelectedMap, setUserSelectedMap] = useState<SelectedIdLableMap>({});
 
   const onClose = () => {
     form.resetFields();
     closeModal?.();
+    setLoading(false);
   };
 
   const clickOk = async () => {
+    setLoading(true);
+
     await form.validateFields();
 
     const values: CreateGroupDto = form.getFieldsValue();
@@ -59,25 +64,45 @@ const GroupForm: FC<FormProps> = ({
     } catch (e) {
       message.error(Object.toString.call(e));
     }
+
+    setLoading(false);
   };
 
-  useEffect(() => {
+  const initEdit = () => {
     if (isOpen && isEdit) {
       const { users, name } = groupData || {};
       if (users) {
-        const userIds = users.map(user => user.id as number);
+        const userIds: number[] = [];
+
+        const userKV: SelectedIdLableMap = {};
+        
+        users.forEach(user => {
+          const { id, username } = user;
+          if (id) {
+            userIds.push(user.id);
+            if (username) {
+              userKV[id] = username;
+            }
+          }
+        });
+
+        setUserSelectedMap(userKV);
+
         form.setFieldsValue({
           userIds,
           name,
         });
       }
     }
+  };
+
+  useEffect(() => {
+    initEdit();
   }, [isOpen, isEdit]);
 
   return <Modal
     title={isEdit ? `给群组【${groupData?.name}】分配` : '添加群组'}
     open={isOpen}
-    // onOk={clickOk}
     maskClosable
     onClose={onClose}
     onCancel={onClose}
@@ -109,6 +134,7 @@ const GroupForm: FC<FormProps> = ({
           dataKey="users"
           idKey="id"
           valKey="id"
+          selectedIdLableMap={userSelectedMap}
           labelKey="username"
           getOptionApi={getUsersApi}
           placeholder="请选择关联用户"

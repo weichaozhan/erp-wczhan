@@ -2,19 +2,21 @@
 
 import { FC, useRef, useState } from 'react';
 import { App, Button, Divider, Popconfirm, Table } from 'antd';
-import { QuestionCircleOutlined, CheckOutlined, EditOutlined, CloseOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 import { CommonTableRef } from '@/app/components/AuthTree/types';
 import TableHOC from '../global/hoc/TableHOC';
 import { GetGroupsReturn } from '../types/auth';
 import { Group } from '../types/entity';
-import { getGroupsApi } from '../api/group';
+import { deleteGroupsApi, getGroupsApi } from '../api/group';
 import GroupForm from './GroupForm';
 
 const { Column } = Table;
 
 const GroupTable: FC = () => {
+  const { message } = App.useApp();
+
   const tableRef = useRef<CommonTableRef | null>(null);
 
   const [visible, setVisible] = useState(false);
@@ -22,6 +24,17 @@ const GroupTable: FC = () => {
   
   const [group, setGroup] = useState<Group | undefined>(undefined);
 
+  const delGroup = async (record: Group) => {
+    try {
+      await deleteGroupsApi(record.id);
+
+      tableRef.current?.refresh();
+
+      message.success(`删除群组【${record.name}】成功！`);
+    } catch (err) {
+      message.error(Object.toString.call(err));
+    }
+  }
 
   return <>
     <Button type="default" onClick={() => setVisible(true)} >
@@ -71,6 +84,37 @@ const GroupTable: FC = () => {
           <Column
             title="操作"
             key="actions"
+            render={(...rest) => {
+              const record = rest[1] as Group;
+              return (<>
+                <Button
+                  className="mr-10px"
+                  type="primary"
+                  icon={<EditOutlined />}
+                  size="small"
+                  onClick={() => {
+                    setGroup(record);
+                    setIsEdit(true);
+                    setVisible(true);
+                  }}
+                />
+
+                <Popconfirm
+                  title="注意"
+                  description={`确认删除群组【${record.name}】？`}
+                  icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                  okButtonProps={{ danger: true, size: 'small' }}
+                  cancelButtonProps={{ size: 'small' }}
+                  onConfirm={() => delGroup(record)}
+                >
+                  <Button
+                    danger
+                    icon={<DeleteOutlined />}
+                    size="small"
+                  />
+                </Popconfirm>
+              </>)
+            }}
           />
         </Table>
       )}

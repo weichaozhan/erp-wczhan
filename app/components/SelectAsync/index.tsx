@@ -5,6 +5,7 @@ import { debounce, once } from 'lodash';
 import { DEFAULT_CURRENT, DEFAULT_PAGE_SIZE } from '@/app/global/constants';
 import { isBrowserEnv } from '@/app/global/tools';
 import { ListProps, PaginationDto } from '@/app/types/auth';
+import { SelectedIdLableMap } from '@/app/types';
 
 interface SrollPagination {
   maxPage: number;
@@ -17,6 +18,8 @@ interface OwnProps {
   idKey: string;
   labelKey: string;
   dataKey: string;
+  // the map to get selected label when selected item is not in option lise
+  selectedIdLableMap?: SelectedIdLableMap;
   getOptionApi?: (body: PaginationDto) => Promise<ListProps & any>;
 }
 type SelectAsyncProps = OwnProps & SelectProps;
@@ -28,6 +31,7 @@ const SelectAsync: FC<SelectAsyncProps> = ({
   idKey,
   labelKey,
   dataKey,
+  selectedIdLableMap = {},
   getOptionApi = () => Promise.resolve({}),
   ...rest
 }) => {
@@ -111,6 +115,7 @@ const SelectAsync: FC<SelectAsyncProps> = ({
     showSearch
     loading={loading}
     filterOption={false}
+    labelRender={(props) => <>{props.label ?? selectedIdLableMap[props.value] ?? props.value}</>}
     onSearch={handleSearch}
     onBlur={() => {
       const { searchKey, searchValue } = pagination;

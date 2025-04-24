@@ -15,3 +15,7 @@ export type MenuListNode = SysModule & { children?: MenuListNode[] };
 
 export type GetMenusApiData = MenuListNode[];
 
+export interface SelectedIdLableMap {
+  [key: keyof any]: string;
+}
+
