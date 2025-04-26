@@ -1,11 +1,14 @@
 "use client";
 
+import { App, Form, Modal, Select } from 'antd';
+import { FC, useEffect, useState } from 'react';
+import { isNil } from 'lodash';
+
 import { getRolesApi } from '@/app/api/auth';
 import { updateUsersApi } from '@/app/api/user';
 import SelectAsync from '@/app/components/SelectAsync';
+import { SelectedIdLableMap } from '@/app/types';
 import { User } from '@/app/types/entity';
-import { App, Form, Modal, Select } from 'antd';
-import { FC, useEffect, useState } from 'react';
 
 interface FormProps {
   userData?: User;
@@ -31,17 +34,22 @@ const RoleSetForm: FC<FormProps> = ({
 
   const [form] = Form.useForm<RoleSetFormVal>();
 
-  const [okLoading] = useState(false);
+  const [okLoading, setOkLoading] = useState(false);
+
+  const [selectedIdLableMap, setSelectedIdLableMap] = useState<SelectedIdLableMap | undefined>();
 
   const onClose = () => {
     form.resetFields();
     closeModal?.();
+    setOkLoading(false);
   };
 
   const clickOk = async () => {
     const values: RoleSetFormVal = form.getFieldsValue();
     const { roles } = values;
-    console.log('values', roles);
+
+    setOkLoading(true);
+
     try {
       const { id, username, email } = userData || {};
       if (id && username && email) {
@@ -49,7 +57,7 @@ const RoleSetForm: FC<FormProps> = ({
             ...userData,
             username,
             email,
-            roles: values.roles.map(roleId => ({
+            roles: roles.map(roleId => ({
               id: roleId,
             })),
         });
@@ -61,13 +69,30 @@ const RoleSetForm: FC<FormProps> = ({
     } catch (e) {
       message.error(Object.toString.call(e));
     }
+
+    setOkLoading(false);
   };
 
   useEffect(() => {
     if (isOpen) {
       const { roles } = userData || {};
       if (roles) {
-        const roleIds = roles.map(role => role.id as number);
+        const roleIds: number[] = [];
+
+        const selectedMap: SelectedIdLableMap = {};
+
+        roles.forEach(role => {
+          const { id, nameToShow } = role;
+          if (!isNil(id)) {
+            roleIds.push(id);
+            if (nameToShow) {
+              selectedMap[id] = nameToShow;
+            }
+          }
+        });
+
+        setSelectedIdLableMap(selectedMap);
+
         form.setFieldsValue({
           roles: roleIds,
         });
@@ -101,6 +126,7 @@ const RoleSetForm: FC<FormProps> = ({
           idKey="id"
           valKey="id"
           labelKey="nameToShow"
+          selectedIdLableMap={selectedIdLableMap}
           getOptionApi={getRolesApi}
         />
       </FormItem>
